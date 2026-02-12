@@ -1,0 +1,271 @@
+// Prisma schema para CRM Freelancer
+// Documentación: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MÓDULO: USUARIOS Y AUTENTICACIÓN
+// ============================================
+
+enum UserRole {
+  ADMIN
+  USER
+  VIEWER
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  firstName String   @map("first_name") @db.VarChar(100)
+  lastName  String   @map("last_name") @db.VarChar(100)
+  role      UserRole @default(USER)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  ownedDeals    Deal[]
+  activities    Activity[]
+  createdQuotations Quotation[]
+  createdInvoices   Invoice[]
+
+  @@map("users")
+}
+
+// ============================================
+// MÓDULO: CONTACTOS Y EMPRESAS
+// ============================================
+
+model Company {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(200)
+  industry    String?  @db.VarChar(100)
+  website     String?  @db.VarChar(255)
+  phone       String?  @db.VarChar(50)
+  email       String?  @db.VarChar(255)
+  address     String?  @db.Text
+  city        String?  @db.VarChar(100)
+  state       String?  @db.VarChar(100)
+  country     String?  @db.VarChar(100)
+  postalCode  String?  @map("postal_code") @db.VarChar(20)
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  contacts   Contact[]
+  deals      Deal[]
+
+  @@map("companies")
+}
+
+model Contact {
+  id          String   @id @default(uuid()) @db.Uuid
+  firstName   String   @map("first_name") @db.VarChar(100)
+  lastName    String   @map("last_name") @db.VarChar(100)
+  email       String   @db.VarChar(255)
+  phone       String?  @db.VarChar(50)
+  position    String?  @db.VarChar(100)
+  companyId   String?  @map("company_id") @db.Uuid
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  company     Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  deals       Deal[]
+  activities  Activity[]
+
+  @@map("contacts")
+}
+
+// ============================================
+// MÓDULO: PIPELINE DE VENTAS
+// ============================================
+
+enum DealStage {
+  PROSPECTO     // Prospecto
+  CONTACTADO    // Contactado
+  PROPUESTA     // Propuesta enviada
+  NEGOCIACION   // Negociación
+  CERRADO_GANADO // Cerrado - Ganado
+  CERRADO_PERDIDO // Cerrado - Perdido
+}
+
+enum DealPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Deal {
+  id          String       @id @default(uuid()) @db.Uuid
+  title       String       @db.VarChar(200)
+  description String?      @db.Text
+  value       Decimal      @default(0) @db.Decimal(10, 2)
+  stage       DealStage    @default(PROSPECTO)
+  priority    DealPriority @default(MEDIUM)
+  expectedCloseDate DateTime? @map("expected_close_date")
+  closedAt    DateTime?    @map("closed_at")
+  ownerId     String       @map("owner_id") @db.Uuid
+  contactId   String?      @map("contact_id") @db.Uuid
+  companyId   String?      @map("company_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relaciones
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  contact     Contact?     @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  company     Company?     @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  activities  Activity[]
+  quotations  Quotation[]
+  invoices    Invoice[]
+
+  @@map("deals")
+}
+
+// ============================================
+// MÓDULO: ACTIVIDADES E INTERACCIONES
+// ============================================
+
+enum ActivityType {
+  CALL      // Llamada
+  EMAIL     // Email
+  MEETING   // Reunión
+  NOTE      // Nota
+  TASK      // Tarea
+  WHATSAPP  // WhatsApp
+}
+
+model Activity {
+  id          String       @id @default(uuid()) @db.Uuid
+  type        ActivityType
+  subject     String       @db.VarChar(200)
+  description String?      @db.Text
+  dueDate     DateTime?    @map("due_date")
+  completedAt DateTime?    @map("completed_at")
+  userId      String       @map("user_id") @db.Uuid
+  dealId      String?      @map("deal_id") @db.Uuid
+  contactId   String?      @map("contact_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relaciones
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deal        Deal?        @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  contact     Contact?     @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@map("activities")
+}
+
+// ============================================
+// MÓDULO: COTIZACIONES
+// ============================================
+
+enum QuotationStatus {
+  DRAFT     // Borrador
+  SENT      // Enviada
+  ACCEPTED  // Aceptada
+  REJECTED  // Rechazada
+  EXPIRED   // Expirada
+}
+
+model Quotation {
+  id          String           @id @default(uuid()) @db.Uuid
+  number      String           @unique @db.VarChar(50)
+  title       String           @db.VarChar(200)
+  status      QuotationStatus  @default(DRAFT)
+  subtotal    Decimal          @default(0) @db.Decimal(10, 2)
+  tax         Decimal          @default(0) @db.Decimal(10, 2)
+  total       Decimal          @default(0) @db.Decimal(10, 2)
+  validUntil  DateTime?        @map("valid_until")
+  notes       String?          @db.Text
+  dealId      String?          @map("deal_id") @db.Uuid
+  createdBy   String           @map("created_by") @db.Uuid
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  // Relaciones
+  deal        Deal?            @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  items       QuotationItem[]
+
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id          String    @id @default(uuid()) @db.Uuid
+  quotationId String    @map("quotation_id") @db.Uuid
+  description String    @db.VarChar(300)
+  quantity    Decimal   @default(1) @db.Decimal(10, 2)
+  unitPrice   Decimal   @map("unit_price") @db.Decimal(10, 2)
+  total       Decimal   @db.Decimal(10, 2)
+  position    Int       @default(0)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relaciones
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+
+  @@map("quotation_items")
+}
+
+// ============================================
+// MÓDULO: FACTURACIÓN
+// ============================================
+
+enum InvoiceStatus {
+  DRAFT      // Borrador
+  SENT       // Enviada
+  PAID       // Pagada
+  OVERDUE    // Vencida
+  CANCELLED  // Cancelada
+}
+
+model Invoice {
+  id          String        @id @default(uuid()) @db.Uuid
+  number      String        @unique @db.VarChar(50)
+  status      InvoiceStatus @default(DRAFT)
+  subtotal    Decimal       @default(0) @db.Decimal(10, 2)
+  tax         Decimal       @default(0) @db.Decimal(10, 2)
+  total       Decimal       @default(0) @db.Decimal(10, 2)
+  dueDate     DateTime?     @map("due_date")
+  paidAt      DateTime?     @map("paid_at")
+  notes       String?       @db.Text
+  dealId      String?       @map("deal_id") @db.Uuid
+  createdBy   String        @map("created_by") @db.Uuid
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  // Relaciones
+  deal        Deal?         @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  creator     User          @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  items       InvoiceItem[]
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid()) @db.Uuid
+  invoiceId   String   @map("invoice_id") @db.Uuid
+  description String   @db.VarChar(300)
+  quantity    Decimal  @default(1) @db.Decimal(10, 2)
+  unitPrice   Decimal  @map("unit_price") @db.Decimal(10, 2)
+  total       Decimal  @db.Decimal(10, 2)
+  position    Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_items")
+}
