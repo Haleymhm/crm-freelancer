@@ -2,37 +2,36 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import { registerSchema, RegisterFormData } from "@/lib/validations/auth"
 
 export default function RegistroPage() {
     const router = useRouter()
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-    })
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
+        defaultValues: {
+            name: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+        },
+    })
+
+    const onSubmit = async (data: RegisterFormData) => {
         setError("")
-
-        if (formData.password !== formData.confirmPassword) {
-            setError("Las contraseñas no coinciden")
-            return
-        }
-
-        if (formData.password.length < 6) {
-            setError("La contraseña debe tener al menos 6 caracteres")
-            return
-        }
-
         setLoading(true)
 
         try {
@@ -40,15 +39,15 @@ export default function RegistroPage() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
+                    name: data.name,
+                    email: data.email,
+                    password: data.password,
                 }),
             })
 
             if (!response.ok) {
-                const data = await response.json()
-                setError(data.error || "Error al crear la cuenta")
+                const responseData = await response.json()
+                setError(responseData.error || "Error al crear la cuenta")
                 return
             }
 
@@ -70,17 +69,18 @@ export default function RegistroPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Nombre</Label>
                             <Input
                                 id="name"
                                 type="text"
                                 placeholder="Tu nombre"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                required
+                                {...register("name")}
                             />
+                            {errors.name && (
+                                <span className="text-sm text-red-500">{errors.name.message}</span>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
@@ -88,10 +88,11 @@ export default function RegistroPage() {
                                 id="email"
                                 type="email"
                                 placeholder="tu@email.com"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                required
+                                {...register("email")}
                             />
+                            {errors.email && (
+                                <span className="text-sm text-red-500">{errors.email.message}</span>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Contraseña</Label>
@@ -99,10 +100,11 @@ export default function RegistroPage() {
                                 id="password"
                                 type="password"
                                 placeholder="••••••••"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                required
+                                {...register("password")}
                             />
+                            {errors.password && (
+                                <span className="text-sm text-red-500">{errors.password.message}</span>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
@@ -110,10 +112,11 @@ export default function RegistroPage() {
                                 id="confirmPassword"
                                 type="password"
                                 placeholder="••••••••"
-                                value={formData.confirmPassword}
-                                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                                required
+                                {...register("confirmPassword")}
                             />
+                            {errors.confirmPassword && (
+                                <span className="text-sm text-red-500">{errors.confirmPassword.message}</span>
+                            )}
                         </div>
                         {error && (
                             <div className="text-sm text-red-500">

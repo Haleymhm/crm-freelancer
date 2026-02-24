@@ -10,11 +10,44 @@ Un CRM minimalista para freelancers, agencias pequeñas o negocios de servicios.
 - **Lenguaje:** TypeScript (Strict mode).
 - **Framework:** Next.js.
 - **Estilos:** TailwindCSS.
-- **Componentes UI:** Shadcn UI (basado en Radix).
+- **Componentes UI:** Shadcn UI.
 - **ORM:** Prisma.
 - **Base de Datos:** Postgres.
 - **Auth:** AuthJS.
-- **Validaciones:** Zod.
+- **Validaciones:** Zod + React Hook Form.
+`import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+// 1. Defines el esquema de "la verdad"
+const userSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(8, "Mínimo 8 caracteres"),
+});
+
+// 2. Extraes el tipo automáticamente
+type UserForm = z.infer<typeof userSchema>;
+
+export default function MyForm() {
+  const { register, handleSubmit, formState: { errors } } = useForm<UserForm>({
+    resolver: zodResolver(userSchema), // 3. La conexión mágica
+  });
+
+  const onSubmit = (data: UserForm) => console.log(data);
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("email")} />
+      {errors.email && <span>{errors.email.message}</span>}
+
+      <input type="password" {...register("password")} />
+      {errors.password && <span>{errors.password.message}</span>}
+      
+      <button type="submit">Enviar</button>
+    </form>
+  );
+}`
+
 - **Versionado:** Git.
 - **Control de Versiones:** GitHub.
 
