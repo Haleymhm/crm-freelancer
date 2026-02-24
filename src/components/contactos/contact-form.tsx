@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,6 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { contactSchema, ContactFormData } from "@/lib/validations/contact"
 
 interface Contact {
     id: string
@@ -45,36 +48,46 @@ interface ContactFormProps {
 export function ContactForm({ open, onOpenChange, contact, onSuccess }: ContactFormProps) {
     const [loading, setLoading] = useState(false)
     const [companies, setCompanies] = useState<Company[]>([])
-    const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        position: "",
-        companyId: "",
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        reset,
+        formState: { errors },
+    } = useForm<ContactFormData>({
+        resolver: zodResolver(contactSchema),
+        defaultValues: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            phone: "",
+            position: "",
+            companyId: "none",
+        },
     })
 
     useEffect(() => {
         if (contact) {
-            setFormData({
+            reset({
                 firstName: contact.firstName || "",
                 lastName: contact.lastName || "",
                 email: contact.email || "",
                 phone: contact.phone || "",
                 position: contact.position || "",
-                companyId: contact.companyId || "",
+                companyId: contact.companyId || "none",
             })
         } else {
-            setFormData({
+            reset({
                 firstName: "",
                 lastName: "",
                 email: "",
                 phone: "",
                 position: "",
-                companyId: "",
+                companyId: "none",
             })
         }
-    }, [contact, open])
+    }, [contact, open, reset])
 
     useEffect(() => {
         if (open) {
@@ -94,20 +107,21 @@ export function ContactForm({ open, onOpenChange, contact, onSuccess }: ContactF
         }
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const onSubmit = async (data: ContactFormData) => {
         setLoading(true)
 
         try {
             const url = contact ? `/api/contactos/${contact.id}` : "/api/contactos"
             const method = contact ? "PUT" : "POST"
 
+            const finalCompanyId = data.companyId === "none" || data.companyId === "" ? null : data.companyId
+
             const response = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    ...formData,
-                    companyId: formData.companyId || null,
+                    ...data,
+                    companyId: finalCompanyId,
                 }),
             })
 
@@ -133,26 +147,28 @@ export function ContactForm({ open, onOpenChange, contact, onSuccess }: ContactF
                         Completa la información del contacto
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="firstName">Nombre *</Label>
                                 <Input
                                     id="firstName"
-                                    value={formData.firstName}
-                                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                    required
+                                    {...register("firstName")}
                                 />
+                                {errors.firstName && (
+                                    <span className="text-sm text-red-500">{errors.firstName.message}</span>
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="lastName">Apellido *</Label>
                                 <Input
                                     id="lastName"
-                                    value={formData.lastName}
-                                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                    required
+                                    {...register("lastName")}
                                 />
+                                {errors.lastName && (
+                                    <span className="text-sm text-red-500">{errors.lastName.message}</span>
+                                )}
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -160,44 +176,59 @@ export function ContactForm({ open, onOpenChange, contact, onSuccess }: ContactF
                             <Input
                                 id="email"
                                 type="email"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                {...register("email")}
                             />
+                            {errors.email && (
+                                <span className="text-sm text-red-500">{errors.email.message}</span>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="phone">Teléfono</Label>
                             <Input
                                 id="phone"
-                                value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                {...register("phone")}
                             />
+                            {errors.phone && (
+                                <span className="text-sm text-red-500">{errors.phone.message}</span>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="position">Cargo</Label>
                             <Input
                                 id="position"
-                                value={formData.position}
-                                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                                {...register("position")}
                             />
+                            {errors.position && (
+                                <span className="text-sm text-red-500">{errors.position.message}</span>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="company">Empresa</Label>
-                            <Select
-                                value={formData.companyId || "none"}
-                                onValueChange={(value) => setFormData({ ...formData, companyId: value === "none" ? "" : value })}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Seleccionar empresa" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="none">Sin empresa</SelectItem>
-                                    {companies.map((company) => (
-                                        <SelectItem key={company.id} value={company.id}>
-                                            {company.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <Controller
+                                name="companyId"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar empresa" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">Sin empresa</SelectItem>
+                                            {companies.map((company) => (
+                                                <SelectItem key={company.id} value={company.id}>
+                                                    {company.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                            {errors.companyId && (
+                                <span className="text-sm text-red-500">{errors.companyId.message}</span>
+                            )}
                         </div>
                     </div>
                     <DialogFooter>

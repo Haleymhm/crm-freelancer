@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { contactSchema } from "@/lib/validations/contact"
+import { z } from "zod"
 
 export async function GET() {
     try {
@@ -36,7 +38,8 @@ export async function POST(request: NextRequest) {
         }
 
         const data = await request.json()
-        const { firstName, lastName, email, phone, position, companyId } = data
+        const validatedData = contactSchema.parse(data)
+        const { firstName, lastName, email, phone, position, companyId } = validatedData
 
         const contact = await prisma.contact.create({
             data: {
@@ -45,13 +48,16 @@ export async function POST(request: NextRequest) {
                 email: email || null,
                 phone: phone || null,
                 position: position || null,
-                companyId: companyId || null,
+                companyId: companyId === "none" ? null : companyId || null,
                 userId: session.user.id,
             },
         })
 
         return NextResponse.json(contact, { status: 201 })
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json({ error: "Datos inválidos", details: error.errors }, { status: 400 })
+        }
         console.error("Error creating contact:", error)
         return NextResponse.json({ error: "Error al crear contacto" }, { status: 500 })
     }
