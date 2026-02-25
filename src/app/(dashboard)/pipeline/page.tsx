@@ -19,10 +19,9 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const STAGES = [
-    { value: "PROSPECTO", label: "Prospecto", color: "bg-gray-500" },
+    { value: "PROSPECTO", label: "Prospecto", color: "bg-yellow-500" },
     { value: "CONTACTADO", label: "Contactado", color: "bg-blue-500" },
     { value: "PROPUESTA_ENVIADA", label: "Propuesta Enviada", color: "bg-purple-500" },
-    { value: "NEGOCIACION", label: "Negociación", color: "bg-yellow-500" },
     { value: "CERRADO_GANADO", label: "Cerrado Ganado", color: "bg-green-500" },
     { value: "CERRADO_PERDIDO", label: "Cerrado Perdido", color: "bg-red-500" },
 ]
@@ -124,7 +123,7 @@ export default function PipelinePage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Pipeline de Ventas</h1>
                 <Button onClick={() => setIsFormOpen(true)}>
@@ -133,7 +132,7 @@ export default function PipelinePage() {
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6">
+            <div className="flex w-full gap-1 overflow-x-auto pb-4">
                 {STAGES.map((stage) => {
                     const stageDeals = deals.filter((d) => d.stage === stage.value)
                     const total = stageDeals.reduce((sum, d) => sum + Number(d.value), 0)
@@ -141,11 +140,11 @@ export default function PipelinePage() {
                     return (
                         <div
                             key={stage.value}
-                            className="space-y-3"
+                            className="flex-1 min-w-[250px] space-y-3 min-h-[700px] overflow-y-auto border-gray-800 bg-gray-100"
                             onDrop={(e) => handleDrop(e, stage.value)}
                             onDragOver={handleDragOver}
                         >
-                            <Card className={`${stage.color} text-white`}>
+                            <Card className={`${stage.color} text-white border-0`}>
                                 <CardHeader className="p-4">
                                     <CardTitle className="text-sm">{stage.label}</CardTitle>
                                     <p className="text-xs opacity-90">
@@ -159,33 +158,33 @@ export default function PipelinePage() {
                                     key={deal.id}
                                     draggable
                                     onDragStart={(e) => handleDragStart(e, deal.id)}
-                                    className="cursor-move hover:shadow-lg transition-shadow"
+                                    className="cursor-move hover:shadow-lg transition-shadow relative group m-1"
                                 >
                                     <CardContent className="p-4">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-sm">{deal.title}</h3>
-                                                <p className="text-lg font-bold text-primary mt-1">
+                                        <div className="flex flex-col h-full">
+                                            <div className="flex-1 mb-6">
+                                                <h3 className="font-semibold text-sm pr-6 leading-tight mb-1">{deal.title}</h3>
+                                                <p className="text-lg font-bold text-primary">
                                                     {formatCurrency(Number(deal.value))}
                                                 </p>
                                                 {deal.contact && (
-                                                    <p className="text-xs text-muted-foreground mt-2">
+                                                    <p className="text-xs text-muted-foreground mt-2 line-clamp-1">
                                                         {deal.contact.firstName} {deal.contact.lastName}
                                                     </p>
                                                 )}
                                                 {deal.company && (
-                                                    <p className="text-xs text-muted-foreground">
+                                                    <p className="text-xs text-muted-foreground line-clamp-1">
                                                         {deal.company.name}
                                                     </p>
                                                 )}
                                             </div>
                                             <Button
-                                                variant="ghost"
+                                                variant="secondary"
                                                 size="icon"
-                                                className="h-6 w-6"
+                                                className="h-7 w-7 absolute bottom-2 right-2 text-muted-foreground hover:text-destructive transition-all"
                                                 onClick={() => handleDelete(deal.id)}
                                             >
-                                                <Trash2 className="h-3 w-3" />
+                                                <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     </CardContent>
