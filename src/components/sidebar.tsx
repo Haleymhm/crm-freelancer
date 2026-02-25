@@ -20,7 +20,7 @@ const menuItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/contactos", label: "Contactos", icon: Users },
     { href: "/empresas", label: "Empresas", icon: Building2 },
-    { href: "/pipeline", label: "Pipeline", icon: Kanban },
+    { href: "/pipeline", label: "Seguimiento", icon: Kanban },
     { href: "/cotizaciones", label: "Cotizaciones", icon: FileText },
     { href: "/facturas", label: "Facturas", icon: Receipt },
     { href: "/reportes", label: "Reportes", icon: BarChart3 },
@@ -30,7 +30,7 @@ export function Sidebar() {
     const pathname = usePathname()
 
     return (
-        <div className="flex h-screen w-64 flex-col border-r bg-card">
+        <div className="flex h-screen w-48 flex-col border-r bg-card">
             <div className="flex h-16 items-center border-b px-6">
                 <h1 className="text-xl font-bold text-primary">CRM Freelancer</h1>
             </div>
