@@ -8,8 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import Image from "next/image"
 import { loginSchema, LoginFormData } from "@/lib/validations/auth"
 
 export default function LoginPage() {
@@ -54,18 +54,30 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-            <Card className="w-full max-w-md">
-                <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold">Iniciar Sesión</CardTitle>
-                    <CardDescription>
-                        Ingresa tus credenciales para acceder al CRM
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
+        <div className="w-full lg:grid lg:grid-cols-2 h-screen">
+            {/* Imagen Izquierda */}
+            <div className="hidden bg-muted lg:block relative h-full">
+                <Image
+                    src="/login-bg.jpg"
+                    alt="Login Background"
+                    fill
+                    className="object-cover dark:brightness-[0.2] dark:grayscale"
+                    priority
+                />
+            </div>
+
+            {/* Formulario Derecha */}
+            <div className="flex items-center justify-center p-8 bg-background h-full overflow-y-auto">
+                <div className="mx-auto w-full max-w-[350px] space-y-6">
+                    <div className="space-y-2 text-center">
+                        <h1 className="text-3xl font-bold tracking-tight">CRM Freelancer</h1>
+                        <p className="text-muted-foreground">
+                            Ingresa tus credenciales
+                        </p>
+                    </div>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                        <div className="space-y-2 text-left">
+                            <Label htmlFor="email">Correo electrónico</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -76,8 +88,10 @@ export default function LoginPage() {
                                 <span className="text-sm text-red-500">{errors.email.message}</span>
                             )}
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Contraseña</Label>
+                        <div className="space-y-2 text-left">
+                            <div className="flex items-center">
+                                <Label htmlFor="password">Contraseña</Label>
+                            </div>
                             <Input
                                 id="password"
                                 type="password"
@@ -89,7 +103,7 @@ export default function LoginPage() {
                             )}
                         </div>
                         {error && (
-                            <div className="text-sm text-red-500">
+                            <div className="text-sm text-red-500 text-left">
                                 {error}
                             </div>
                         )}
@@ -103,8 +117,8 @@ export default function LoginPage() {
                             Regístrate aquí
                         </Link>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     )
 }

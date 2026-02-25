@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import Image from "next/image"
 import { registerSchema, RegisterFormData } from "@/lib/validations/auth"
 
 export default function RegistroPage() {
@@ -60,17 +60,29 @@ export default function RegistroPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-            <Card className="w-full max-w-md">
-                <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold">Crear Cuenta</CardTitle>
-                    <CardDescription>
-                        Completa el formulario para crear tu cuenta
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
+        <div className="w-full lg:grid lg:grid-cols-2 h-screen">
+            {/* Imagen Izquierda */}
+            <div className="hidden bg-muted lg:block relative h-full">
+                <Image
+                    src="/login-bg.jpg"
+                    alt="Register Background"
+                    fill
+                    className="object-cover dark:brightness-[0.2] dark:grayscale"
+                    priority
+                />
+            </div>
+
+            {/* Formulario Derecha */}
+            <div className="flex items-center justify-center p-8 bg-background h-full overflow-y-auto">
+                <div className="mx-auto w-full max-w-[350px] space-y-6">
+                    <div className="space-y-2 text-center">
+                        <h1 className="text-3xl font-bold tracking-tight">Crear Cuenta</h1>
+                        <p className="text-muted-foreground">
+                            Completa el formulario para crear tu cuenta
+                        </p>
+                    </div>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="space-y-2">
+                        <div className="space-y-2 text-left">
                             <Label htmlFor="name">Nombre</Label>
                             <Input
                                 id="name"
@@ -82,8 +94,8 @@ export default function RegistroPage() {
                                 <span className="text-sm text-red-500">{errors.name.message}</span>
                             )}
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                        <div className="space-y-2 text-left">
+                            <Label htmlFor="email">Correo electrónico</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -94,8 +106,10 @@ export default function RegistroPage() {
                                 <span className="text-sm text-red-500">{errors.email.message}</span>
                             )}
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Contraseña</Label>
+                        <div className="space-y-2 text-left">
+                            <div className="flex items-center">
+                                <Label htmlFor="password">Contraseña</Label>
+                            </div>
                             <Input
                                 id="password"
                                 type="password"
@@ -106,8 +120,10 @@ export default function RegistroPage() {
                                 <span className="text-sm text-red-500">{errors.password.message}</span>
                             )}
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                        <div className="space-y-2 text-left">
+                            <div className="flex items-center">
+                                <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                            </div>
                             <Input
                                 id="confirmPassword"
                                 type="password"
@@ -119,7 +135,7 @@ export default function RegistroPage() {
                             )}
                         </div>
                         {error && (
-                            <div className="text-sm text-red-500">
+                            <div className="text-sm text-red-500 text-left">
                                 {error}
                             </div>
                         )}
@@ -133,8 +149,8 @@ export default function RegistroPage() {
                             Inicia sesión aquí
                         </Link>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     )
 }
