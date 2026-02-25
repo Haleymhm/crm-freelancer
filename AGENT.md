@@ -60,6 +60,7 @@ export default function MyForm() {
 - Documenta las funciones complejas en español.
 - No uses variables globales.
 - Utiliza versiones para las rutas de la API.
+- Usa pnpm para instalar dependencias.
 
 ### Backend & Base de Datos (Prisma)
 
