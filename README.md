@@ -1,12 +1,12 @@
-# CRM Freelancer
+# CRM Minimalista
 
-Un CRM minimalista diseñado específicamente para freelancers, agencias pequeñas o negocios de servicios. Permite la gestión eficiente de clientes, seguimiento de propuestas y cotizaciones, visualización del pipeline de ventas, recordatorios de seguimiento y facturación básica, todo sin la complejidad de sistemas corporativos pesados.
+Un CRM minimalista diseñado específicamente para agencias pequeñas o negocios de servicios. Permite la gestión eficiente de clientes, seguimiento de propuestas y cotizaciones, visualización del pipeline de ventas, recordatorios de seguimiento y facturación básica, todo sin la complejidad de sistemas corporativos pesados.
 
 ## 🚀 Características Principales
 
 - **Dashboard Integrado:** Visualización de deals activos, ingresos del mes, cotizaciones pendientes y nuevos clientes.
 - **Gestión de Contactos y Empresas:** Registro detallado con historial de interacciones y notas de seguimiento.
-- **Pipeline de Ventas (Kanban):** Interfaz visual interactiva con estados personalizables (Prospecto, Contactado, Propuesta Enviada, Negociación, Cerrado).
+- **Seguimiento de Ventas (Kanban):** Interfaz visual interactiva con estados personalizables (Prospecto, Contactado, Propuesta Enviada, Negociación, Cerrado).
 - **Cotizaciones y Propuestas:** Creación y envío de cotizaciones detallando servicios y precios.
 - **Seguimiento Automatizado:** Sistema de recordatorios automáticos para asegurar el cierre de tratos (deals).
 - **Facturación Básica:** Generación y envío de facturas directamente desde oportunidades de negocio cerradas.
