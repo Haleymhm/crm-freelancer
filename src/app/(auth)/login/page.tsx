@@ -70,9 +70,9 @@ export default function LoginPage() {
             <div className="flex items-center justify-center p-8 bg-background h-full overflow-y-auto">
                 <div className="mx-auto w-full max-w-[350px] space-y-6">
                     <div className="space-y-2 text-center">
-                        <h1 className="text-3xl font-bold tracking-tight">¡Bienvenido de vuelta!</h1>
+                        <h1 className="text-3xl font-bold tracking-tight">CRM Freelancer</h1>
                         <p className="text-muted-foreground">
-                            Ingresa tus credenciales para acceder al CRM
+                            Ingresa tus credenciales
                         </p>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
