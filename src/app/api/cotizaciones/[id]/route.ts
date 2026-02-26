@@ -3,6 +3,17 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { updateQuoteSchema } from "@/lib/validations/quote"
 import { z } from "zod"
+import type { DealStage } from "@prisma/client"
+
+type QuoteItem = {
+    description: string
+    quantity: number
+    unitPrice: number
+    total?: number
+}
+
+const validStatuses = ["BORRADOR", "ENVIADA", "ACEPTADA", "RECHAZADA"] as const
+type QuoteStatus = (typeof validStatuses)[number]
 
 /**
  * Calcula los totales de la cotización en el servidor.
@@ -87,11 +98,11 @@ export async function PUT(
         const validatedData = updateQuoteSchema.parse(body)
         const { items, taxRate, validUntil, notes } = validatedData
 
-        const itemsToUpdate = items ?? (existing.items as any[])
+        const itemsToUpdate = items ?? (existing.items as QuoteItem[])
         const rateToUse = taxRate ?? 16
         const { subtotal, tax, total } = calculateTotals(itemsToUpdate, rateToUse)
 
-        const processedItems = itemsToUpdate.map((item: any) => ({
+        const processedItems = itemsToUpdate.map((item) => ({
             ...item,
             total: item.quantity * item.unitPrice,
         }))
@@ -140,12 +151,13 @@ export async function PATCH(
         }
 
         const { id } = await params
-        const { status } = await request.json()
+        const { status } = (await request.json()) as { status: string }
 
-        const validStatuses = ["BORRADOR", "ENVIADA", "ACEPTADA", "RECHAZADA"]
-        if (!validStatuses.includes(status)) {
+        if (!validStatuses.includes(status as QuoteStatus)) {
             return NextResponse.json({ error: "Estado inválido" }, { status: 400 })
         }
+
+        const nextStatus = status as QuoteStatus
 
         const existing = await prisma.quote.findFirst({
             where: { id, deal: { userId: session.user.id } },
@@ -161,19 +173,19 @@ export async function PATCH(
          * ENVIADA   → el deal pasa a "Propuesta Enviada"
          * ACEPTADA  → el deal pasa a "Cerrado Ganado" (con fecha de cierre)
          */
-        const dealStageMap: Record<string, { stage: string; closedAt?: Date }> = {
-            ENVIADA: { stage: "PROPUESTA_ENVIADA" },
-            ACEPTADA: { stage: "CERRADO_GANADO", closedAt: new Date() },
+        const dealStageMap: Partial<Record<QuoteStatus, { stage: DealStage; closedAt?: Date }>> = {
+            ENVIADA: { stage: "PROPUESTA_ENVIADA" as DealStage },
+            ACEPTADA: { stage: "CERRADO_GANADO" as DealStage, closedAt: new Date() },
         }
 
         // Actualización atómica: cotización + deal en una sola transacción
-        const dealUpdate = dealStageMap[status]
+        const dealUpdate = dealStageMap[nextStatus] ?? null
         const [updatedQuote] = await prisma.$transaction([
             prisma.quote.update({
                 where: { id },
                 data: {
-                    status: status as any,
-                    ...(status === "ENVIADA" && { sentAt: new Date() }),
+                    status: nextStatus,
+                    ...(nextStatus === "ENVIADA" && { sentAt: new Date() }),
                 },
             }),
             ...(dealUpdate
@@ -181,7 +193,7 @@ export async function PATCH(
                     prisma.deal.update({
                         where: { id: existing.dealId },
                         data: {
-                            stage: dealUpdate.stage as any,
+                            stage: dealUpdate.stage,
                             ...(dealUpdate.closedAt && { closedAt: dealUpdate.closedAt }),
                         },
                     }),
