@@ -128,7 +128,7 @@ export async function PUT(
     }
 }
 
-// PATCH /api/cotizaciones/[id] — Cambia el estado de una cotización
+// PATCH /api/cotizaciones/[id] — Cambia el estado de una cotización y sincroniza el Deal
 export async function PATCH(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -149,26 +149,53 @@ export async function PATCH(
 
         const existing = await prisma.quote.findFirst({
             where: { id, deal: { userId: session.user.id } },
+            select: { id: true, dealId: true, status: true },
         })
 
         if (!existing) {
             return NextResponse.json({ error: "Cotización no encontrada" }, { status: 404 })
         }
 
-        const updated = await prisma.quote.update({
-            where: { id },
-            data: {
-                status: status as any,
-                ...(status === "ENVIADA" && { sentAt: new Date() }),
-            },
-        })
+        /**
+         * Mapa de sincronización: estado de cotización → etapa del deal.
+         * ENVIADA   → el deal pasa a "Propuesta Enviada"
+         * ACEPTADA  → el deal pasa a "Cerrado Ganado" (con fecha de cierre)
+         */
+        const dealStageMap: Record<string, { stage: string; closedAt?: Date }> = {
+            ENVIADA: { stage: "PROPUESTA_ENVIADA" },
+            ACEPTADA: { stage: "CERRADO_GANADO", closedAt: new Date() },
+        }
 
-        return NextResponse.json(updated)
+        // Actualización atómica: cotización + deal en una sola transacción
+        const dealUpdate = dealStageMap[status]
+        const [updatedQuote] = await prisma.$transaction([
+            prisma.quote.update({
+                where: { id },
+                data: {
+                    status: status as any,
+                    ...(status === "ENVIADA" && { sentAt: new Date() }),
+                },
+            }),
+            ...(dealUpdate
+                ? [
+                    prisma.deal.update({
+                        where: { id: existing.dealId },
+                        data: {
+                            stage: dealUpdate.stage as any,
+                            ...(dealUpdate.closedAt && { closedAt: dealUpdate.closedAt }),
+                        },
+                    }),
+                ]
+                : []),
+        ])
+
+        return NextResponse.json(updatedQuote)
     } catch (error) {
         console.error("Error updating quote status:", error)
         return NextResponse.json({ error: "Error al actualizar estado" }, { status: 500 })
     }
 }
+
 
 // DELETE /api/cotizaciones/[id] — Elimina una cotización (solo en BORRADOR)
 export async function DELETE(
