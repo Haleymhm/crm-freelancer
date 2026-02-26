@@ -49,11 +49,19 @@ export async function GET(request: NextRequest) {
         const dealId = searchParams.get("dealId")
         const status = searchParams.get("status")
 
+        const validStatuses = ["BORRADOR", "ENVIADA", "ACEPTADA", "RECHAZADA"] as const
+        type QuoteStatus = (typeof validStatuses)[number]
+
+        const statusFilter =
+            status && validStatuses.includes(status as QuoteStatus)
+                ? (status as QuoteStatus)
+                : null
+
         const quotes = await prisma.quote.findMany({
             where: {
                 deal: { userId: session.user.id },
                 ...(dealId && { dealId }),
-                ...(status && { status: status as any }),
+                ...(statusFilter && { status: statusFilter }),
             },
             include: {
                 deal: {
