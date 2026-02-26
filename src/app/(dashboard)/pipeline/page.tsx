@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
@@ -36,11 +35,22 @@ interface Deal {
     company?: { name: string }
 }
 
+interface ContactOption {
+    id: string
+    firstName: string
+    lastName: string
+}
+
+interface CompanyOption {
+    id: string
+    name: string
+}
+
 export default function PipelinePage() {
     const [deals, setDeals] = useState<Deal[]>([])
     const [isFormOpen, setIsFormOpen] = useState(false)
-    const [contacts, setContacts] = useState<any[]>([])
-    const [companies, setCompanies] = useState<any[]>([])
+    const [contacts, setContacts] = useState<ContactOption[]>([])
+    const [companies, setCompanies] = useState<CompanyOption[]>([])
     const [formData, setFormData] = useState({
         title: "",
         description: "",
