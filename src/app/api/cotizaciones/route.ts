@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
                 subtotal,
                 tax,
                 total,
-                validUntil: validUntil ? new Date(validUntil) : null,
+                validUntil: validUntil ? new Date(`${validUntil}T12:00:00Z`) : null,
                 notes: notes || null,
             },
             include: {

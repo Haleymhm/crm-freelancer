@@ -8,10 +8,10 @@ export const quoteItemSchema = z.object({
 })
 
 export const createQuoteSchema = z.object({
-    dealId: z.string().uuid("El deal es requerido"),
+    dealId: z.string().min(1, "Debes seleccionar un deal"),
     items: z.array(quoteItemSchema).min(1, "Agrega al menos un ítem"),
-    taxRate: z.number().min(0).max(100).default(16),
-    validUntil: z.string().datetime().optional().or(z.literal("")),
+    taxRate: z.number().min(0).max(100).optional().default(16),
+    validUntil: z.string().optional().or(z.literal("")),
     notes: z.string().optional().or(z.literal("")),
 })
 
