@@ -15,12 +15,20 @@ export async function PATCH(
         const { id } = await params
         const data = await request.json()
 
+        const updateData: any = {}
+        if (data.stage !== undefined) {
+            updateData.stage = data.stage
+            if (data.stage.startsWith("CERRADO")) updateData.closedAt = new Date()
+        }
+        if (data.title !== undefined) updateData.title = data.title
+        if (data.description !== undefined) updateData.description = data.description
+        if (data.value !== undefined) updateData.value = data.value
+        if (data.contactId !== undefined) updateData.contactId = data.contactId || null
+        if (data.companyId !== undefined) updateData.companyId = data.companyId || null
+
         const deal = await prisma.deal.updateMany({
             where: { id, userId: session.user.id },
-            data: {
-                stage: data.stage,
-                ...(data.stage.startsWith("CERRADO") && { closedAt: new Date() }),
-            },
+            data: updateData,
         })
 
         if (deal.count === 0) {
