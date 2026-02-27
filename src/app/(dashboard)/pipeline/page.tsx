@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, Edit2, FileText } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import {
     Dialog,
@@ -16,6 +16,29 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { QuoteDetailDialog } from "@/components/cotizaciones/quote-detail-dialog"
+
+interface QuoteItem {
+    description: string
+    quantity: number
+    unitPrice: number
+    total: number
+}
+
+interface Quote {
+    id: string
+    quoteNumber: string
+    status: any
+    items: QuoteItem[]
+    subtotal: number | string
+    tax: number | string
+    total: number | string
+    validUntil: string | null
+    notes: string | null
+    sentAt: string | null
+    createdAt: string
+    deal: any
+}
 
 const STAGES = [
     { value: "PROSPECTO", label: "Prospecto", color: "bg-yellow-500" },
@@ -31,8 +54,11 @@ interface Deal {
     description?: string
     value: number
     stage: string
+    contactId?: string | null
+    companyId?: string | null
     contact?: { firstName: string; lastName: string }
     company?: { name: string }
+    quotes?: any[]
 }
 
 interface ContactOption {
@@ -49,6 +75,9 @@ interface CompanyOption {
 export default function PipelinePage() {
     const [deals, setDeals] = useState<Deal[]>([])
     const [isFormOpen, setIsFormOpen] = useState(false)
+    const [editingDealId, setEditingDealId] = useState<string | null>(null)
+    const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
+    const [detailOpen, setDetailOpen] = useState(false)
     const [contacts, setContacts] = useState<ContactOption[]>([])
     const [companies, setCompanies] = useState<CompanyOption[]>([])
     const [formData, setFormData] = useState({
@@ -105,15 +134,47 @@ export default function PipelinePage() {
         e.preventDefault()
     }
 
+    const handleEditDeal = (deal: Deal) => {
+        setEditingDealId(deal.id)
+        setFormData({
+            title: deal.title,
+            description: deal.description || "",
+            value: deal.value.toString(),
+            stage: deal.stage,
+            contactId: deal.contactId || "",
+            companyId: deal.companyId || "",
+        })
+        setIsFormOpen(true)
+    }
+
+    const openQuoteDetail = (deal: Deal) => {
+        if (deal.quotes && deal.quotes.length > 0) {
+            const q = deal.quotes[0]
+            setSelectedQuote({
+                ...q,
+                deal: {
+                    id: deal.id,
+                    title: deal.title,
+                    contact: deal.contact || null,
+                    company: deal.company || null,
+                }
+            })
+            setDetailOpen(true)
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        const response = await fetch("/api/deals", {
-            method: "POST",
+        const url = editingDealId ? `/api/deals/${editingDealId}` : "/api/deals"
+        const method = editingDealId ? "PATCH" : "POST"
+
+        const response = await fetch(url, {
+            method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 ...formData,
-                value: parseFloat(formData.value),
+                value: parseFloat(formData.value as string),
                 contactId: formData.contactId || null,
                 companyId: formData.companyId || null,
             }),
@@ -122,6 +183,7 @@ export default function PipelinePage() {
         if (response.ok) {
             fetchDeals()
             setIsFormOpen(false)
+            setEditingDealId(null)
             setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", contactId: "", companyId: "" })
         }
     }
@@ -136,7 +198,11 @@ export default function PipelinePage() {
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Pipeline de Ventas</h1>
-                <Button onClick={() => setIsFormOpen(true)}>
+                <Button onClick={() => {
+                    setEditingDealId(null)
+                    setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", contactId: "", companyId: "" })
+                    setIsFormOpen(true)
+                }}>
                     <Plus className="mr-2 h-4 w-4" />
                     Nuevo Deal
                 </Button>
@@ -188,14 +254,36 @@ export default function PipelinePage() {
                                                     </p>
                                                 )}
                                             </div>
-                                            <Button
-                                                variant="secondary"
-                                                size="icon"
-                                                className="h-7 w-7 absolute bottom-2 right-2 text-muted-foreground hover:text-destructive transition-all"
-                                                onClick={() => handleDelete(deal.id)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                            <div className="flex gap-2 absolute bottom-2 right-2">
+                                                {deal.stage === "PROPUESTA_ENVIADA" && deal.quotes && deal.quotes.length > 0 && (
+                                                    <Button
+                                                        variant="secondary"
+                                                        size="icon"
+                                                        className="h-7 w-7 text-muted-foreground hover:text-green-600 transition-all"
+                                                        onClick={() => openQuoteDetail(deal)}
+                                                    >
+                                                        <FileText className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                                {(deal.stage === "PROSPECTO" || deal.stage === "CONTACTADO") && (
+                                                    <Button
+                                                        variant="secondary"
+                                                        size="icon"
+                                                        className="h-7 w-7 text-muted-foreground hover:text-blue-500 transition-all"
+                                                        onClick={() => handleEditDeal(deal)}
+                                                    >
+                                                        <Edit2 className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                                <Button
+                                                    variant="secondary"
+                                                    size="icon"
+                                                    className="h-7 w-7 text-muted-foreground hover:text-destructive transition-all"
+                                                    onClick={() => handleDelete(deal.id)}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -208,8 +296,8 @@ export default function PipelinePage() {
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Nuevo Deal</DialogTitle>
-                        <DialogDescription>Crea una nueva oportunidad de negocio</DialogDescription>
+                        <DialogTitle>{editingDealId ? "Editar Deal" : "Nuevo Deal"}</DialogTitle>
+                        <DialogDescription>{editingDealId ? "Modifica los detalles del deal" : "Crea una nueva oportunidad de negocio"}</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit}>
                         <div className="grid gap-4 py-4">
@@ -271,11 +359,19 @@ export default function PipelinePage() {
                         </div>
                         <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>Cancelar</Button>
-                            <Button type="submit">Crear Deal</Button>
+                            <Button type="submit">{editingDealId ? "Guardar Cambios" : "Crear Deal"}</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <QuoteDetailDialog
+                quote={selectedQuote}
+                open={detailOpen}
+                onOpenChange={setDetailOpen}
+                onStatusChange={fetchDeals}
+                onDelete={fetchDeals}
+            />
         </div>
     )
 }
