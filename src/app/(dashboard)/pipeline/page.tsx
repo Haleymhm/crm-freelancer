@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Edit2 } from "lucide-react"
+import { Plus, Trash2, Edit2, FileText } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import {
     Dialog,
@@ -16,6 +16,29 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { QuoteDetailDialog } from "@/components/cotizaciones/quote-detail-dialog"
+
+interface QuoteItem {
+    description: string
+    quantity: number
+    unitPrice: number
+    total: number
+}
+
+interface Quote {
+    id: string
+    quoteNumber: string
+    status: any
+    items: QuoteItem[]
+    subtotal: number | string
+    tax: number | string
+    total: number | string
+    validUntil: string | null
+    notes: string | null
+    sentAt: string | null
+    createdAt: string
+    deal: any
+}
 
 const STAGES = [
     { value: "PROSPECTO", label: "Prospecto", color: "bg-yellow-500" },
@@ -35,6 +58,7 @@ interface Deal {
     companyId?: string | null
     contact?: { firstName: string; lastName: string }
     company?: { name: string }
+    quotes?: any[]
 }
 
 interface ContactOption {
@@ -52,6 +76,8 @@ export default function PipelinePage() {
     const [deals, setDeals] = useState<Deal[]>([])
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [editingDealId, setEditingDealId] = useState<string | null>(null)
+    const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
+    const [detailOpen, setDetailOpen] = useState(false)
     const [contacts, setContacts] = useState<ContactOption[]>([])
     const [companies, setCompanies] = useState<CompanyOption[]>([])
     const [formData, setFormData] = useState({
@@ -119,6 +145,22 @@ export default function PipelinePage() {
             companyId: deal.companyId || "",
         })
         setIsFormOpen(true)
+    }
+
+    const openQuoteDetail = (deal: Deal) => {
+        if (deal.quotes && deal.quotes.length > 0) {
+            const q = deal.quotes[0]
+            setSelectedQuote({
+                ...q,
+                deal: {
+                    id: deal.id,
+                    title: deal.title,
+                    contact: deal.contact || null,
+                    company: deal.company || null,
+                }
+            })
+            setDetailOpen(true)
+        }
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -213,6 +255,16 @@ export default function PipelinePage() {
                                                 )}
                                             </div>
                                             <div className="flex gap-2 absolute bottom-2 right-2">
+                                                {deal.stage === "PROPUESTA_ENVIADA" && deal.quotes && deal.quotes.length > 0 && (
+                                                    <Button
+                                                        variant="secondary"
+                                                        size="icon"
+                                                        className="h-7 w-7 text-muted-foreground hover:text-green-600 transition-all"
+                                                        onClick={() => openQuoteDetail(deal)}
+                                                    >
+                                                        <FileText className="h-4 w-4" />
+                                                    </Button>
+                                                )}
                                                 {(deal.stage === "PROSPECTO" || deal.stage === "CONTACTADO") && (
                                                     <Button
                                                         variant="secondary"
@@ -312,6 +364,14 @@ export default function PipelinePage() {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <QuoteDetailDialog
+                quote={selectedQuote}
+                open={detailOpen}
+                onOpenChange={setDetailOpen}
+                onStatusChange={fetchDeals}
+                onDelete={fetchDeals}
+            />
         </div>
     )
 }

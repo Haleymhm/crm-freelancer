@@ -14,6 +14,7 @@ export async function GET() {
             include: {
                 contact: { select: { firstName: true, lastName: true } },
                 company: { select: { name: true } },
+                quotes: { orderBy: { createdAt: "desc" } },
             },
             orderBy: { createdAt: "desc" },
         })
