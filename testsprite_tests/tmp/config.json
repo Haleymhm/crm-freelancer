@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3001",
+  "executionArgs": {
+    "projectName": "crm-freelancer",
+    "projectPath": "/home/haleymhm/Projects/repositories-git/crm-freelancer",
+    "testIds": [],
+    "additionalInstruction": "",
+    "serverMode": "production",
+    "envs": {
+      "API_KEY": "sk-user-OL9bYkua-1RqOCdk57ComnNx6j3xlSx2aGxCJv1_AE3aytpa06RcGOKMs1-KVSo2U5auCyVkgm3yDG7IC2x4blpcKwfUreFq9Ha6mKExG6FEO0NhSX4ivFGq5j8nNe-S4z8"
+    }
+  },
+  "serverPort": 43927,
+  "proxy": "http://4b2abcc2-6b25-4eb5-8636-d6a440346d32:V92Gnopv10pF1DMACbHZwRthB8dp3VVv@tun.testsprite.com:8080"
+}

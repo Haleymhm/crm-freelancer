@@ -1,0 +1,82 @@
+version: "2"
+type: frontend
+tech_stack:
+  - next.js
+  - react
+  - tailwindcss
+  - prisma
+  - typescript
+routes:
+  - path: /login
+    file: src/app/login/page.tsx
+    auth_required: false
+    description: User login page
+  - path: /registro
+    file: src/app/registro/page.tsx
+    auth_required: false
+    description: User registration page
+  - path: /contactos
+    file: src/app/contactos/page.tsx
+    auth_required: true
+    description: Contacts management page
+  - path: /cotizaciones
+    file: src/app/cotizaciones/page.tsx
+    auth_required: true
+    description: Quotations management page
+  - path: /empresas
+    file: src/app/empresas/page.tsx
+    auth_required: true
+    description: Companies management page
+  - path: /pipeline
+    file: src/app/pipeline/page.tsx
+    auth_required: true
+    description: Deals pipeline dashboard
+  - path: /facturas
+    file: src/app/facturas/page.tsx
+    auth_required: true
+    description: Invoices management page
+  - path: /reportes
+    file: src/app/reportes/page.tsx
+    auth_required: true
+    description: Reports page
+features:
+  - name: User Authentication
+    description: Login and Registration for users
+    files:
+      - src/app/login/page.tsx
+      - src/app/registro/page.tsx
+    entry_route: /login
+    user_interactions:
+      - Fill email and password fields
+      - Click submit to log in or register
+    api_calls:
+      - method: POST
+        endpoint: /api/auth/[...nextauth]
+  - name: Contacts Management
+    description: View, create, edit, and delete contacts
+    files:
+      - src/app/contactos/page.tsx
+    entry_route: /contactos
+    user_interactions:
+      - View list of contacts
+      - Click create contact
+      - Fill contact details
+    api_calls:
+      - method: GET
+        endpoint: /api/contactos
+      - method: POST
+        endpoint: /api/contactos
+  - name: Deals Pipeline
+    description: View and manage deals in a kanban pipeline
+    files:
+      - src/app/pipeline/page.tsx
+    entry_route: /pipeline
+    user_interactions:
+      - Drag and drop deals across stages
+      - Edit deals
+    api_calls:
+      - method: GET
+        endpoint: /api/deals
+      - method: PUT
+        endpoint: /api/deals/[id]
+known_limitations: []
