@@ -47,6 +47,7 @@ export default function LoginPage() {
                 router.refresh()
             }
         } catch (error) {
+            
             setError("Error al iniciar sesión")
         } finally {
             setLoading(false)

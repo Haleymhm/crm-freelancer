@@ -6,7 +6,7 @@ export const contactSchema = z.object({
     email: z.string().email("Correo inválido").optional().or(z.literal("")),
     phone: z.string().optional().or(z.literal("")),
     position: z.string().optional().or(z.literal("")),
-    companyId: z.string().optional().or(z.literal("none")).or(z.literal("")),
+    companyId: z.string().nullable().optional().or(z.literal("none")).or(z.literal("")),
 })
 
 export type ContactFormData = z.infer<typeof contactSchema>

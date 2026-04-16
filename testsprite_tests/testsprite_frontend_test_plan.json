@@ -1,0 +1,1512 @@
+[
+  {
+    "id": "TC001",
+    "title": "Log in with valid credentials and land on pipeline",
+    "description": "Verifies that a user can log in with valid credentials and reach the protected pipeline dashboard.",
+    "category": "User Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the pipeline dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify deals pipeline content is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Log in with invalid credentials shows an error",
+    "description": "Verifies that invalid login attempts show an invalid-credentials error state.",
+    "category": "User Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill invalid_user@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill wrongpassword123 into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an invalid credentials error message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user remains on the login page"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Register with valid details redirects to login with success confirmation",
+    "description": "Verifies that a new user can register and is redirected to the login page with a success notification.",
+    "category": "User Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /registro"
+      },
+      {
+        "type": "action",
+        "description": "Fill testuser+{{TIMESTAMP}}@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill ValidPass!234 into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the login page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Registration with missing required field shows validation error",
+    "description": "Verifies that the registration form enforces required fields and shows validation feedback.",
+    "category": "User Authentication",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /registro"
+      },
+      {
+        "type": "action",
+        "description": "Fill testuser+{{TIMESTAMP}}@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill  into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user remains on the registration page"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Create a new contact and see it in the list",
+    "description": "Verifies end-to-end contact creation from the contacts page and that the new contact appears in the list.",
+    "category": "Contacts Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the contacts page"
+      },
+      {
+        "type": "action",
+        "description": "Click create contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill Contact {{TIMESTAMP}} into the contact name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill contact{{TIMESTAMP}}@example.com into the contact email field"
+      },
+      {
+        "type": "action",
+        "description": "Save the contact"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the contacts list includes \"Contact {{TIMESTAMP}}\""
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Edit an existing contact and see updates in the list",
+    "description": "Verifies that a user can open a contact, modify fields, save, and see the updated values reflected in the contacts list.",
+    "category": "Contacts Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the contacts page"
+      },
+      {
+        "type": "action",
+        "description": "Click a contact in the list"
+      },
+      {
+        "type": "action",
+        "description": "Fill Updated Contact {{TIMESTAMP}} into the contact name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the contact"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the contacts list includes \"Updated Contact {{TIMESTAMP}}\""
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Contact creation with missing required field shows validation error",
+    "description": "Verifies that required contact fields are validated and prevent saving when missing.",
+    "category": "Contacts Management",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the contacts page"
+      },
+      {
+        "type": "action",
+        "description": "Click create contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill  into the contact name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the contact"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new contact is not added to the contacts list"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Delete a contact and confirm it is removed from the list",
+    "description": "Verifies that deleting a contact removes it from the contacts list after confirming the deletion.",
+    "category": "Contacts Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the contacts page"
+      },
+      {
+        "type": "action",
+        "description": "Click delete on a contact"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the deleted contact is removed from the contacts list"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Create a new company and see it in the list",
+    "description": "Verifies end-to-end company creation and that the new company appears in the companies list.",
+    "category": "Companies Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the companies page"
+      },
+      {
+        "type": "action",
+        "description": "Click create company"
+      },
+      {
+        "type": "action",
+        "description": "Fill Company {{TIMESTAMP}} into the company name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the company"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the companies list includes \"Company {{TIMESTAMP}}\""
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Edit an existing company and see updates in the list",
+    "description": "Verifies that a user can open a company, edit details, save, and see the updated values in the companies list.",
+    "category": "Companies Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the companies page"
+      },
+      {
+        "type": "action",
+        "description": "Click a company in the list"
+      },
+      {
+        "type": "action",
+        "description": "Fill Updated Company {{TIMESTAMP}} into the company name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the company"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the companies list includes \"Updated Company {{TIMESTAMP}}\""
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Company creation with missing required field shows validation error",
+    "description": "Verifies that company required fields are validated and saving is blocked when missing.",
+    "category": "Companies Management",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the companies page"
+      },
+      {
+        "type": "action",
+        "description": "Click create company"
+      },
+      {
+        "type": "action",
+        "description": "Fill  into the company name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the company"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new company is not added to the companies list"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Delete a company and confirm it is removed from the list",
+    "description": "Verifies that deleting a company removes it from the companies list after confirming the deletion.",
+    "category": "Companies Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the companies page"
+      },
+      {
+        "type": "action",
+        "description": "Click delete on a company"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the deleted company is removed from the companies list"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Deals Pipeline loads kanban board",
+    "description": "Verifies the pipeline page loads and displays deal stage columns with deal cards.",
+    "category": "Deals Pipeline (Kanban)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the deals pipeline"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify kanban columns for deal stages are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify at least one deal card is displayed on the board"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Move a deal card to another stage",
+    "description": "Verifies a deal card can be moved from one stage column to another and remains there.",
+    "category": "Deals Pipeline (Kanban)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the deals pipeline"
+      },
+      {
+        "type": "action",
+        "description": "Drag a deal card from the PROSPECTO stage column"
+      },
+      {
+        "type": "action",
+        "description": "Drop the deal card into the PROPUESTA_ENVIADA stage column"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the deal card is displayed in the PROPUESTA_ENVIADA stage column"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Edit a deal from the board and save changes",
+    "description": "Verifies deal details can be edited and saved from the pipeline, and the updated data is reflected on the board.",
+    "category": "Deals Pipeline (Kanban)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the deals pipeline"
+      },
+      {
+        "type": "action",
+        "description": "Click a deal card to open its details"
+      },
+      {
+        "type": "action",
+        "description": "Fill 12345 into the deal value field"
+      },
+      {
+        "type": "action",
+        "description": "Save the deal changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the deal card displays the updated value 12345"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Filter deals using search or filter controls",
+    "description": "Verifies using the pipeline search/filter reduces the visible deal cards.",
+    "category": "Deals Pipeline (Kanban)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the deals pipeline"
+      },
+      {
+        "type": "action",
+        "description": "Fill zzz-nonmatching-query into the search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible for the board results"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Create quote with one line item and see calculated totals",
+    "description": "Verifies a quote can be created with line items and that subtotal, tax, and total are shown after saving.",
+    "category": "Quotes (Cotizaciones) Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to quotations"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to create a new quote"
+      },
+      {
+        "type": "action",
+        "description": "Select a deal for the quote"
+      },
+      {
+        "type": "action",
+        "description": "Add a new line item"
+      },
+      {
+        "type": "action",
+        "description": "Fill Test item into the line item description field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 2 into the line item quantity field"
+      },
+      {
+        "type": "action",
+        "description": "Fill 100 into the line item price field"
+      },
+      {
+        "type": "action",
+        "description": "Save the quote"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the saved quote shows calculated subtotal, tax, and total"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the quote is present in the quotes list"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Update quote status to ENVIADA",
+    "description": "Verifies an existing quote status can be changed to ENVIADA and reflected in the list.",
+    "category": "Quotes (Cotizaciones) Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to quotations"
+      },
+      {
+        "type": "action",
+        "description": "Click a quote from the list to open details"
+      },
+      {
+        "type": "action",
+        "description": "Select ENVIADA as the quote status"
+      },
+      {
+        "type": "action",
+        "description": "Save the quote"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the quote status is shown as ENVIADA in the quotes list"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Prevent saving quote without line items",
+    "description": "Verifies validation prevents saving a quote when no line items are provided.",
+    "category": "Quotes (Cotizaciones) Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to quotations"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to create a new quote"
+      },
+      {
+        "type": "action",
+        "description": "Save the quote"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error is visible indicating at least one line item is required"
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Delete a quote from quote details",
+    "description": "Verifies a quote can be deleted after confirmation and is removed from the quotes list.",
+    "category": "Quotes (Cotizaciones) Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to quotations"
+      },
+      {
+        "type": "action",
+        "description": "Click a quote from the list to open details"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to delete the quote"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the quote is removed from the quotes list"
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Generate invoice from a quote or deal and see PENDIENTE status",
+    "description": "Verifies an invoice can be generated and appears with status PENDIENTE.",
+    "category": "Invoices Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to invoices"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to create a new invoice"
+      },
+      {
+        "type": "action",
+        "description": "Select a quote or deal for the invoice"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to generate the invoice"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a new invoice is present in the invoice list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new invoice shows status PENDIENTE"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Mark an invoice as paid",
+    "description": "Verifies an invoice can be marked as paid after confirmation and shows status PAGADA.",
+    "category": "Invoices Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to invoices"
+      },
+      {
+        "type": "action",
+        "description": "Click an invoice from the list to open details"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to mark the invoice as paid"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice status is shown as PAGADA"
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Prevent generating invoice without required billing fields",
+    "description": "Verifies validation prevents generating an invoice when required billing fields are missing.",
+    "category": "Invoices Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to invoices"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to create a new invoice"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to generate the invoice"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a billing validation error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "Delete an invoice from invoice details",
+    "description": "Verifies an invoice can be deleted after confirmation and is removed from the invoice list.",
+    "category": "Invoices Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to invoices"
+      },
+      {
+        "type": "action",
+        "description": "Click an invoice from the list to open details"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to delete the invoice"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the deletion"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the invoice is removed from the invoice list"
+      }
+    ]
+  },
+  {
+    "id": "TC025",
+    "title": "Reports dashboard loads with metrics and charts",
+    "description": "Verifies the reports page loads and displays key dashboard metrics and charts.",
+    "category": "Reports & Dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to reports"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify dashboard metrics are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify deals and revenue charts are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "Reports date filter updates charts",
+    "description": "Verifies applying a date range filter updates report charts to reflect the selected range.",
+    "category": "Reports & Dashboard",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to reports"
+      },
+      {
+        "type": "action",
+        "description": "Open the date range filter control"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid start date"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid end date"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the charts update to reflect the selected date range"
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "Reports filter with no results shows empty state",
+    "description": "Verifies applying a filter that yields no data shows an empty state on charts and related messages.",
+    "category": "Reports & Dashboard",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to reports"
+      },
+      {
+        "type": "action",
+        "description": "Open the date range filter control"
+      },
+      {
+        "type": "action",
+        "description": "Select a date range far in the past that is likely to contain no records"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a no-data state is displayed on the charts"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible for the filtered results"
+      }
+    ]
+  },
+  {
+    "id": "TC028",
+    "title": "Export report shows export confirmation",
+    "description": "Verifies initiating report export results in an observable export confirmation in the UI.",
+    "category": "Reports & Dashboard",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to reports"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to export or download the report"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an export confirmation is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC029",
+    "title": "Reports invalid date range shows validation error",
+    "description": "Verifies selecting an invalid date range (end date before start date) surfaces a validation error.",
+    "category": "Reports & Dashboard",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to reports"
+      },
+      {
+        "type": "action",
+        "description": "Open the date range filter control"
+      },
+      {
+        "type": "action",
+        "description": "Select an end date that is earlier than the start date"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a date validation error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC030",
+    "title": "Add interaction to a deal and see it in timeline",
+    "description": "Verifies a user can add an interaction to a deal and see it appear in the deal timeline.",
+    "category": "Interactions & Reminders",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the pipeline"
+      },
+      {
+        "type": "action",
+        "description": "Click a deal card"
+      },
+      {
+        "type": "action",
+        "description": "Open the interactions panel or tab"
+      },
+      {
+        "type": "action",
+        "description": "Click to add an interaction"
+      },
+      {
+        "type": "action",
+        "description": "Select an interaction type"
+      },
+      {
+        "type": "action",
+        "description": "Fill interaction details with unique note text \"Interaction {{TIMESTAMP}}\""
+      },
+      {
+        "type": "action",
+        "description": "Save the interaction"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new interaction appears in the deal timeline with text \"Interaction {{TIMESTAMP}}\""
+      }
+    ]
+  },
+  {
+    "id": "TC031",
+    "title": "Add reminder to a deal and see it listed",
+    "description": "Verifies a user can add a reminder linked to a deal and see it listed for that deal.",
+    "category": "Interactions & Reminders",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the pipeline"
+      },
+      {
+        "type": "action",
+        "description": "Click a deal card"
+      },
+      {
+        "type": "action",
+        "description": "Open the interactions panel or tab"
+      },
+      {
+        "type": "action",
+        "description": "Click to add a reminder"
+      },
+      {
+        "type": "action",
+        "description": "Set the reminder date"
+      },
+      {
+        "type": "action",
+        "description": "Set the reminder time"
+      },
+      {
+        "type": "action",
+        "description": "Save the reminder"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the reminder is listed for the deal"
+      }
+    ]
+  },
+  {
+    "id": "TC032",
+    "title": "Interaction form required-field validation",
+    "description": "Verifies leaving required interaction fields empty prevents saving and shows validation errors.",
+    "category": "Interactions & Reminders",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the pipeline"
+      },
+      {
+        "type": "action",
+        "description": "Click a deal card"
+      },
+      {
+        "type": "action",
+        "description": "Open the interactions panel or tab"
+      },
+      {
+        "type": "action",
+        "description": "Click to add an interaction"
+      },
+      {
+        "type": "action",
+        "description": "Save the interaction without filling required fields"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify required-field validation errors are visible"
+      }
+    ]
+  },
+  {
+    "id": "TC033",
+    "title": "Cancel adding interaction does not create timeline entry",
+    "description": "Verifies canceling the add-interaction workflow does not create a new interaction entry.",
+    "category": "Interactions & Reminders",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the pipeline"
+      },
+      {
+        "type": "action",
+        "description": "Click a deal card"
+      },
+      {
+        "type": "action",
+        "description": "Open the interactions panel or tab"
+      },
+      {
+        "type": "action",
+        "description": "Click to add an interaction"
+      },
+      {
+        "type": "action",
+        "description": "Fill interaction details with unique note text \"Canceled interaction {{TIMESTAMP}}\""
+      },
+      {
+        "type": "action",
+        "description": "Cancel the interaction form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no interaction entry with text \"Canceled interaction {{TIMESTAMP}}\" is present in the deal timeline"
+      }
+    ]
+  },
+  {
+    "id": "TC034",
+    "title": "Cancel adding reminder does not create reminder entry",
+    "description": "Verifies canceling the add-reminder workflow does not create a reminder entry for the deal.",
+    "category": "Interactions & Reminders",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the pipeline"
+      },
+      {
+        "type": "action",
+        "description": "Click a deal card"
+      },
+      {
+        "type": "action",
+        "description": "Open the interactions panel or tab"
+      },
+      {
+        "type": "action",
+        "description": "Click to add a reminder"
+      },
+      {
+        "type": "action",
+        "description": "Set the reminder date"
+      },
+      {
+        "type": "action",
+        "description": "Set the reminder time"
+      },
+      {
+        "type": "action",
+        "description": "Cancel the reminder form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the reminder list does not include a newly created reminder from the canceled workflow"
+      }
+    ]
+  }
+]

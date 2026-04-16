@@ -209,7 +209,7 @@ export function ContactForm({ open, onOpenChange, contact, onSuccess }: ContactF
                                 control={control}
                                 render={({ field }) => (
                                     <Select
-                                        value={field.value}
+                                        value={field.value ?? undefined}
                                         onValueChange={field.onChange}
                                     >
                                         <SelectTrigger>
