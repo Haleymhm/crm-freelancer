@@ -33,68 +33,72 @@ async def run_test():
         # -> Navigate to http://localhost:3001
         await page.goto("http://localhost:3001", wait_until="commit", timeout=10000)
         
-        # -> Open the 'Contactos' page by clicking the Contactos link in the sidebar, then locate a contact to delete.
+        # -> Enter credentials into the email and password fields (indexes 8 and 9) and submit the login form by clicking the button (index 10).
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('example@gmail.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password123')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+        # -> Click the 'Contactos' link in the sidebar to open the contacts list (index 385).
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Open the 'Nuevo Contacto' form to create a new contact so it can later be deleted and verified.
+        # -> Click the 'Nuevo Contacto' button to open the create-contact form (index 502).
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/main/div/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Fill the new contact form with required data and save it to create the contact.
+        # -> Fill the contact form with test data and click 'Guardar' to create the contact, then wait for the contacts list to update.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[4]/form/div/div/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('Juan')
+        await page.wait_for_timeout(3000); await elem.fill('Test')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[4]/form/div/div/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('Pérez')
+        await page.wait_for_timeout(3000); await elem.fill('User')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[4]/form/div/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('juan.perez@example.com')
+        await page.wait_for_timeout(3000); await elem.fill('test.user@example.com')
         
-        # -> Click the 'Guardar' button to save the new contact.
+        # -> Click 'Guardar' (index 576) to save the new contact, then wait for the contacts list to update so the created contact can be deleted.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[4]/form/div[2]/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Click the 'Guardar' (submit) button again to attempt to save the new contact, then verify the modal closes and the contact appears in the list.
+        # -> Open the 'Nuevo Contacto' form, fill it with test data (Test User), save it, then verify the new contact appears so it can be deleted.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[4]/form/div[2]/button[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/main/div/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Click the 'Guardar' button to save the new contact, then wait for the modal to close and the contact to appear in the list so the delete action can be performed.
+        # -> Close the 'Nuevo Contacto' dialog so the contacts list is accessible and then delete the 'Test User' contact.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[4]/form/div[2]/button[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[4]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Click the 'Guardar' button to save the new contact, wait for the modal to close, then check the contacts list for the created contact so it can be deleted and verified.
+        # -> Hacer clic en el botón de eliminar del contacto 'Test User' para abrir la confirmación de borrado, confirmar la eliminación y verificar que la fila ya no aparece en la lista.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[4]/form/div[2]/button[2]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Click the 'Guardar' button to save the new contact, wait for the modal to close, then check the contacts list for the created contact (so it can be deleted and verification performed).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[4]/form/div[2]/button[2]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Click the 'Guardar' button to submit the new contact form and wait for the modal to close so the newly created contact appears in the contacts list.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[4]/form/div[2]/button[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/main/div/div/div[3]/div/table/tbody/tr/td[6]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
         # --> Assertions to verify final state

@@ -33,16 +33,26 @@ async def run_test():
         # -> Navigate to http://localhost:3001
         await page.goto("http://localhost:3001", wait_until="commit", timeout=10000)
         
-        # -> Click the 'Contactos' navigation link to open the contacts list.
+        # -> Fill the email and password fields and submit the login form (enter example@gmail.com / password123).
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('example@gmail.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password123')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+        # -> Click the 'Contactos' navigation link to open the contacts list (element index 286).
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[2]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Open the contacts page content by clicking the 'Contactos' navigation link to load the contacts list in the main area, then locate a contact to open.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[3]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
         # --> Assertions to verify final state

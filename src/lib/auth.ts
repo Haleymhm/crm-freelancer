@@ -17,7 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
-                    return null
+                    throw new Error("Credenciales incorrectas")
                 }
 
                 const user = await prisma.user.findUnique({
@@ -27,7 +27,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 })
 
                 if (!user || !user.password) {
-                    return null
+                    throw new Error("Credenciales incorrectas")
                 }
 
                 const passwordMatch = await bcrypt.compare(
@@ -36,7 +36,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 )
 
                 if (!passwordMatch) {
-                    return null
+                    throw new Error("Credenciales incorrectas")
                 }
 
                 return {

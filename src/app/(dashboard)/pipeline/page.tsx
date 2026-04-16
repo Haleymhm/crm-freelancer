@@ -41,7 +41,7 @@ interface Quote {
 }
 
 const STAGES = [
-    { value: "PROSPECTO", label: "Prospecto", color: "bg-yellow-500" },
+    { value: "PROSPECTO", label: "Prospección", color: "bg-yellow-500" },
     { value: "CONTACTADO", label: "Contactado", color: "bg-blue-500" },
     { value: "PROPUESTA_ENVIADA", label: "Propuesta Enviada", color: "bg-purple-500" },
     { value: "CERRADO_GANADO", label: "Cerrado Ganado", color: "bg-green-500" },
@@ -74,6 +74,7 @@ interface CompanyOption {
 
 export default function PipelinePage() {
     const [deals, setDeals] = useState<Deal[]>([])
+    const [searchTerm, setSearchTerm] = useState("")
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [editingDealId, setEditingDealId] = useState<string | null>(null)
     const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
@@ -134,6 +135,15 @@ export default function PipelinePage() {
         e.preventDefault()
     }
 
+    const filteredDeals = deals.filter((deal) => {
+        const search = searchTerm.toLowerCase()
+        return (
+            deal.title.toLowerCase().includes(search) ||
+            deal.company?.name.toLowerCase().includes(search) ||
+            `${deal.contact?.firstName || ""} ${deal.contact?.lastName || ""}`.toLowerCase().includes(search)
+        )
+    })
+
     const handleEditDeal = (deal: Deal) => {
         setEditingDealId(deal.id)
         setFormData({
@@ -174,7 +184,7 @@ export default function PipelinePage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 ...formData,
-                value: parseFloat(formData.value as string),
+                value: formData.value ? parseFloat(formData.value as string) : 0,
                 contactId: formData.contactId || null,
                 companyId: formData.companyId || null,
             }),
@@ -185,11 +195,14 @@ export default function PipelinePage() {
             setIsFormOpen(false)
             setEditingDealId(null)
             setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", contactId: "", companyId: "" })
+        } else {
+            console.error("Error response:", await response.text());
+            alert("Error al guardar el deal")
         }
     }
 
     const handleDelete = async (id: string) => {
-        if (!confirm("¿Eliminar este deal?")) return
+        if (!confirm("¿Eliminar esta oportunidad?")) return
         const response = await fetch(`/api/deals/${id}`, { method: "DELETE" })
         if (response.ok) fetchDeals()
     }
@@ -204,13 +217,22 @@ export default function PipelinePage() {
                     setIsFormOpen(true)
                 }}>
                     <Plus className="mr-2 h-4 w-4" />
-                    Nuevo Deal
+                    Nueva Oportunidad
                 </Button>
+            </div>
+
+            <div className="flex items-center space-x-2">
+                <Input
+                    placeholder="Buscar deals..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="max-w-sm"
+                />
             </div>
 
             <div className="flex w-full gap-1 overflow-x-auto pb-4">
                 {STAGES.map((stage) => {
-                    const stageDeals = deals.filter((d) => d.stage === stage.value)
+                    const stageDeals = filteredDeals.filter((d) => d.stage === stage.value)
                     const total = stageDeals.reduce((sum, d) => sum + Number(d.value), 0)
 
                     return (
@@ -296,8 +318,8 @@ export default function PipelinePage() {
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{editingDealId ? "Editar Deal" : "Nuevo Deal"}</DialogTitle>
-                        <DialogDescription>{editingDealId ? "Modifica los detalles del deal" : "Crea una nueva oportunidad de negocio"}</DialogDescription>
+                        <DialogTitle>{editingDealId ? "Editar Oportunidad" : "Nueva Oportunidad"}</DialogTitle>
+                        <DialogDescription>{editingDealId ? "Modifica los detalles de la oportunidad" : "Crea una nueva oportunidad de negocio"}</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit}>
                         <div className="grid gap-4 py-4">
@@ -359,7 +381,7 @@ export default function PipelinePage() {
                         </div>
                         <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>Cancelar</Button>
-                            <Button type="submit">{editingDealId ? "Guardar Cambios" : "Crear Deal"}</Button>
+                            <Button type="submit">{editingDealId ? "Guardar Cambios" : "Crear Oportunidad"}</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>

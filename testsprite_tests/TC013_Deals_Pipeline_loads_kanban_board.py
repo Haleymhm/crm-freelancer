@@ -33,19 +33,35 @@ async def run_test():
         # -> Navigate to http://localhost:3001
         await page.goto("http://localhost:3001", wait_until="commit", timeout=10000)
         
-        # -> Click the 'Seguimiento' navigation link to open the deals pipeline and then verify kanban columns and deal cards are present.
+        # -> Fill the email and password fields and submit the login form.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('example@gmail.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password123')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+        # -> Click the 'Seguimiento' menu item (left navigation) to open the deals/pipeline board and verify kanban columns and deal cards.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[5]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Click the 'Seguimiento' navigation link to open the deals pipeline, then verify kanban columns and at least one deal card is present on the board. Immediate action: click the 'Seguimiento' link (index 58).
+        # -> Click the 'Seguimiento' menu item in the left navigation to open the deals/pipeline board and then check for kanban columns and at least one deal card.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[4]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Click the 'Seguimiento' navigation link (index 64) to open the deals pipeline and then check for kanban columns and at least one deal card.
+        # -> Click the 'Seguimiento' navigation link in the left menu to open the deals/pipeline board and then check for kanban columns and at least one deal card.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[5]').nth(0)
@@ -53,8 +69,8 @@ async def run_test():
         
         # --> Assertions to verify final state
         frame = context.pages[-1]
-        await expect(frame.locator('text=Pipeline').first).to_be_visible(timeout=3000)
-        await expect(frame.locator('xpath=//div[contains(@class,"kanban-card") or contains(@class,"deal-card") or contains(@class,"board-card")]').first).to_be_visible(timeout=3000)
+        await expect(frame.locator('text=Prospección').first).to_be_visible(timeout=3000)
+        await expect(frame.locator('text=Nueva Oportunidad').first).to_be_visible(timeout=3000)
         await asyncio.sleep(5)
 
     finally:

@@ -22,6 +22,12 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 
+interface Notification {
+    id: number
+    message: string
+    type: "success" | "error"
+}
+
 interface Company {
     id: string
     name: string
@@ -36,6 +42,8 @@ export default function EmpresasPage() {
     const [loading, setLoading] = useState(true)
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [selectedCompany, setSelectedCompany] = useState<Company | undefined>()
+    const [notifications, setNotifications] = useState<Notification[]>([])
+    const [notificationCounter, setNotificationCounter] = useState(0)
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -96,6 +104,9 @@ export default function EmpresasPage() {
             fetchCompanies()
             setIsFormOpen(false)
             setSelectedCompany(undefined)
+        } else {
+            console.error("Error response:", await response.text());
+            alert("Error al guardar la empresa")
         }
     }
 
@@ -103,11 +114,35 @@ export default function EmpresasPage() {
         if (!confirm("¿Eliminar esta empresa?")) return
 
         const response = await fetch(`/api/empresas/${id}`, { method: "DELETE" })
-        if (response.ok) fetchCompanies()
+        if (response.ok) {
+            fetchCompanies()
+            const newNotification: Notification = {
+                id: notificationCounter,
+                message: "Empresa eliminada",
+                type: "success"
+            }
+            setNotifications(prev => [...prev, newNotification])
+            setNotificationCounter(prev => prev + 1)
+            setTimeout(() => {
+                setNotifications(prev => prev.filter(n => n.id !== newNotification.id))
+            }, 3000)
+        }
     }
 
     return (
         <div className="space-y-6">
+            {notifications.length > 0 && (
+                <div className="fixed top-4 right-4 z-50 space-y-2">
+                    {notifications.map((notification) => (
+                        <div
+                            key={notification.id}
+                            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-in slide-in-from-right"
+                        >
+                            <p className="font-medium">{notification.message}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Empresas</h1>
                 <Button onClick={() => {

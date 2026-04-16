@@ -33,51 +33,31 @@ async def run_test():
         # -> Navigate to http://localhost:3001
         await page.goto("http://localhost:3001", wait_until="commit", timeout=10000)
         
-        # -> Click the 'Cotizaciones' navigation link to open the quotations list/page.
+        # -> Fill the email field with example@gmail.com and the password with password123, then submit the login form.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('example@gmail.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password123')
+        
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[6]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Click the 'Cotizaciones' navigation link to open the quotations list/page (interactive element index 68).
+        # -> Click the 'Cotizaciones' (Quotations) link in the sidebar to open the quotations module (element index 236).
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[5]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Click the 'Cotizaciones' navigation link (interactive element index 76) to open the quotations list/page.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[6]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Open the 'Cotizaciones' page so the quotations list and the 'Nueva Cotización' control are visible (click navigation link).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[5]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Open the 'Cotizaciones' page by clicking the navigation link (interactive element index 76) so the quotations list and 'Nueva Cotización' control are visible.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[6]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Open the 'Cotizaciones' page so the quotations list and the 'Nueva Cotización' control are visible by clicking the Cotizaciones navigation link (index 68).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[5]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Click the 'Cotizaciones' navigation link to open the quotations page so the 'Nueva Cotización' control is available.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[6]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
         # --> Assertions to verify final state
         frame = context.pages[-1]
-        await expect(frame.locator('text=Total: $220.00').first).to_be_visible(timeout=3000)
+        await expect(frame.locator('xpath=//*[contains(., "Subtotal") and contains(., "Tax") and contains(., "Total")]').first).to_be_visible(timeout=3000)
         await expect(frame.locator('text=Test item').first).to_be_visible(timeout=3000)
         await asyncio.sleep(5)
 

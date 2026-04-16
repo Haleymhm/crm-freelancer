@@ -33,28 +33,44 @@ async def run_test():
         # -> Navigate to http://localhost:3001
         await page.goto("http://localhost:3001", wait_until="commit", timeout=10000)
         
-        # -> Click the 'Cotizaciones' navigation link to open the quotations page.
+        # -> Fill the email and password fields and submit the login form.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('example@gmail.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password123')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+        # -> Open the Cotizaciones (Quotations) page by clicking the Cotizaciones menu item.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[5]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+        # -> Open the Cotizaciones page (if not already fully loaded) and click the action to create a new quote (Nueva Cotización / Crear Cotización).
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[6]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Click the 'Cotizaciones' navigation link to open the quotations page (element index 65).
+        # -> Open the Cotizaciones page by clicking the Cotizaciones menu item and verify whether the cotizaciones module is available or marked 'Módulo en Desarrollo'. If available, proceed to create a new quote; otherwise, report that the feature is not present.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[5]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Click the 'Cotizaciones' navigation link (element index 65) to open the quotations page.
+        # -> Click the 'Cotizaciones' menu item to open the Quotations page and verify whether the Cotizaciones module is available or marked as 'Módulo en Desarrollo'.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[5]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-        # -> Click the 'Nueva Cotización' button to open the create-quote form.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/main/div/div/div/button').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[6]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
         # --> Assertions to verify final state

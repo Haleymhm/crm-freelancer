@@ -1213,7 +1213,7 @@ body {
         </div>
         <div class="metadata-row">
           <div class="metadata-label text-body-medium">Date</div>
-          <div class="metadata-value text-body">26-03-2026</div>
+          <div class="metadata-value text-body">30-03-2026</div>
         </div>
         <div class="metadata-row">
           <div class="metadata-label text-body-medium">Prepared by</div>
@@ -1234,17 +1234,15 @@ body {
         
         <div class="coverage-summary">
           <ul class="coverage-list text-body">
-            <li><span class="coverage-highlight">8/30</span> of tests passed</li>
+            <li><span class="coverage-highlight">6/14</span> of tests passed</li>
             <li><span class="coverage-highlight">Key gaps / risks:</span>
             
-              <blockquote>
-<p><strong>Core Functionality Blocks</strong>
-Over 73% of tests failed, with failures highly concentrated around database persistency for Contact and Deal records (e.g., forms failing to close upon submission). Specifically, &quot;Nuevo Deal&quot; has an input value ceiling bug (<code>valuemax=0</code> preventing data entry). Without fundamental record creation, all downstream updating and removing flows are un-testable (cascading failures).</p>
-<p><strong>Missing Modules / Under Construction</strong>
-Large chunks of the application such as <em>Facturas</em> (Invoicing) and <em>Reportes</em> (Reporting) are explicitly hardcoded to display &quot;Módulo en Desarrollo&quot; states. These unimplemented pages skew overall failure metrics negatively.</p>
-<p><strong>UX / Validation Shortfalls</strong>
-The Login page lacks user-facing error indicators when entering invalid credentials. It gets stalled in a perpetual &quot;Iniciando sesión...&quot; state instead. Quotations lack a workflow method for eliminating the final (only) line item, resulting in strict validation constraints that might confuse actual users attempting to clear a quote layout.</p>
-</blockquote>
+              <ol>
+<li><strong>AI Locators/Test Flakiness:</strong> The TestSprite agent struggled heavily navigating the correct URL schemas (i.e navigating to <code>/companies</code> instead of <code>/empresas</code>). The testing scripts should be audited or updated to adapt to the Next.js App Router layout structure and interactive tables.</li>
+<li><strong>Empty DOM State Rendering on Modals:</strong> In TC008, the automatic closing of confirm dialogues resulted in an Empty DOM state which disrupted the test. Component hydration should be reviewed for React hooks handling <code>confirm()</code>.</li>
+<li><strong>Módulos en Desarrollo:</strong> Large tracts of testing (TC017-TC028) attempt to operate on Cotizaciones, Facturas features which do not have frontend representation yet. These tests should be bypassed or placed in a skipped suite pending module deployments.</li>
+</ol>
+<hr>
 
             </li>
 </ul>
@@ -1269,58 +1267,42 @@ The Login page lacks user-facing error indicators when entering invalid credenti
           <div class="table-rows">
             
             <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: User Authentication</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
+              <div class="table-cell"><span class="text-body">Authentication & User Management</span></div>
+              <div class="table-cell"><span class="text-body">3</span></div>
+              <div class="table-cell"><span class="text-body">3</span></div>
+              <div class="table-cell"><span class="text-body">0</span></div>
+            </div>
+        
+
+            <div class="table-row">
+              <div class="table-cell"><span class="text-body">Contact Management</span></div>
               <div class="table-cell"><span class="text-body">3</span></div>
               <div class="table-cell"><span class="text-body">1</span></div>
+              <div class="table-cell"><span class="text-body">2</span></div>
             </div>
         
 
             <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: Contacts Management</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
-              <div class="table-cell"><span class="text-body">1</span></div>
+              <div class="table-cell"><span class="text-body">Company Management</span></div>
+              <div class="table-cell"><span class="text-body">3</span></div>
+              <div class="table-cell"><span class="text-body">0</span></div>
               <div class="table-cell"><span class="text-body">3</span></div>
             </div>
         
 
             <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: Companies Management</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
+              <div class="table-cell"><span class="text-body">Pipeline & Deals</span></div>
               <div class="table-cell"><span class="text-body">3</span></div>
+              <div class="table-cell"><span class="text-body">2</span></div>
               <div class="table-cell"><span class="text-body">1</span></div>
             </div>
         
 
             <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: Deals Pipeline Kanban</span></div>
-              <div class="table-cell"><span class="text-body">6</span></div>
-              <div class="table-cell"><span class="text-body">1</span></div>
-              <div class="table-cell"><span class="text-body">5</span></div>
-            </div>
-        
-
-            <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: Quotations Management</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
+              <div class="table-cell"><span class="text-body">Under Development Features (Quotes, Invoices & Reports)</span></div>
+              <div class="table-cell"><span class="text-body">2</span></div>
               <div class="table-cell"><span class="text-body">0</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
-            </div>
-        
-
-            <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: Invoicing</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
-              <div class="table-cell"><span class="text-body">0</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
-            </div>
-        
-
-            <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: Reporting Dashboard</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
-              <div class="table-cell"><span class="text-body">0</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
+              <div class="table-cell"><span class="text-body">2</span></div>
             </div>
         
           </div>
@@ -1343,13 +1325,13 @@ The Login page lacks user-facing error indicators when entering invalid credenti
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <div class="requirement-content">
                                           <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: User Authentication</h3>
-                <div class="requirement-status-tag status-error">
+              <h3 class="title-requirement">Authentication & User Management</h3>
+                <div class="requirement-status-tag status-success">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-                <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
+                <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>3/4</span>
+              <span>3/3</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -1365,7 +1347,7 @@ The Login page lacks user-facing error indicators when entering invalid credenti
             <div class="test-wrapper">
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC001: Log in with valid credentials and land on pipeline</h4>
+                  <h4 class="text-body-medium">TC001 Log in with valid credentials and land on pipeline</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -1400,17 +1382,17 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Valid login flows work exactly as expected.</div>
+                    <div class="test-field-value text-body">Valid credentials correctly log the user in and redirect to the pipeline dashboard.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC002: Log in with invalid credentials shows an error</h4>
+                  <h4 class="text-body-medium">TC002 Log in with invalid credentials shows an error</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -1432,33 +1414,30 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Status</div>
                     <div class="test-field-value">
-                      
-            <div class="status-wrapper">
+                      <div class="status-wrapper">
                 <div class="status-icon">
                     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
+                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
-                <span class="text-body status-fail">Failed</span>
+                <span class="text-body status-pass">Pass</span>
             </div>
-            
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Missing visible error. The login button remained stuck on "Iniciando sesión..." without notifying the user of bad credentials.</div>
+                    <div class="test-field-value text-body">NextAuth correctly throws an exception to the UI preventing an infinite loading state.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC003: Register with valid details redirects to login</h4>
+                  <h4 class="text-body-medium">TC003 Register with valid details redirects to login with success confirmation</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -1493,23 +1472,51 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Registration functions properly and redirect works.</div>
+                    <div class="test-field-value text-body">User registration works and correctly provisions accounts.</div>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+                <div class="requirement-wrapper accordion-item active">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="requirement-content">
+                                          <div class="requirement-title-row">
+              <h3 class="title-requirement">Contact Management</h3>
+                <div class="requirement-status-tag status-error">
+              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
+                <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>1/3</span>
+            </div>
+              </div>
+              <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
+            </div>
+            <div class="accordion-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.4276 6C11.9145 6 12.1687 6.61626 11.875 7.01439L11.8316 7.06689L8.40295 10.817C8.30455 10.9246 8.17364 10.9892 8.03476 10.9988C7.89589 11.0083 7.7586 10.9621 7.64865 10.8688L7.59493 10.817L4.16629 7.06689L4.11886 7.00814L4.088 6.96002L4.05714 6.90002L4.04743 6.87752L4.032 6.83564L4.01371 6.76814L4.008 6.73501L4.00229 6.69751L4 6.66189V6.58814L4.00286 6.55188L4.008 6.51438L4.01371 6.48188L4.032 6.41438L4.04743 6.37251L4.08743 6.29L4.12457 6.23375L4.16629 6.18313L4.22 6.13125L4.26401 6.0975L4.31886 6.06375L4.33944 6.05313L4.37772 6.03625L4.43944 6.01625L4.46972 6.01L4.50401 6.00375L4.53658 6.00125L11.4276 6Z" fill="var(--fg-secondary)"/>
+              </svg>
+            </div>
+          </div>
+
+            <div class="accordion-content">
+            <div class="test-wrapper">
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC004: Registration with missing required field shows validation error</h4>
+                  <h4 class="text-body-medium">TC005 Create a new contact and see it in the list</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Code</div>
                     <div class="test-field-value text-body">
-                      <a href="./TC004_Registration_with_missing_required_field_shows_validation_error.py" class="text-link">TC004_Registration_with_missing_required_field_shows_validation_error.py</a>
+                      <a href="./TC005_Create_a_new_contact_and_see_it_in_the_list.py" class="text-link">TC005_Create_a_new_contact_and_see_it_in_the_list.py</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -1538,93 +1545,17 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Client form validation handles empty fields correctly.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-                <div class="requirement-wrapper accordion-item active">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <div class="requirement-content">
-                                          <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: Contacts Management</h3>
-                <div class="requirement-status-tag status-error">
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-                <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>1/4</span>
-            </div>
-              </div>
-              <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
-            </div>
-            <div class="accordion-icon">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.4276 6C11.9145 6 12.1687 6.61626 11.875 7.01439L11.8316 7.06689L8.40295 10.817C8.30455 10.9246 8.17364 10.9892 8.03476 10.9988C7.89589 11.0083 7.7586 10.9621 7.64865 10.8688L7.59493 10.817L4.16629 7.06689L4.11886 7.00814L4.088 6.96002L4.05714 6.90002L4.04743 6.87752L4.032 6.83564L4.01371 6.76814L4.008 6.73501L4.00229 6.69751L4 6.66189V6.58814L4.00286 6.55188L4.008 6.51438L4.01371 6.48188L4.032 6.41438L4.04743 6.37251L4.08743 6.29L4.12457 6.23375L4.16629 6.18313L4.22 6.13125L4.26401 6.0975L4.31886 6.06375L4.33944 6.05313L4.37772 6.03625L4.43944 6.01625L4.46972 6.01L4.50401 6.00375L4.53658 6.00125L11.4276 6Z" fill="var(--fg-secondary)"/>
-              </svg>
-            </div>
-          </div>
-
-            <div class="accordion-content">
-            <div class="test-wrapper">
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC005: Create a new contact and see it in the list</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC005_Create_a_new_contact_and_see_it_in_the_list.py" class="text-link">TC005_Create_a_new_contact_and_see_it_in_the_list.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
                     <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Creating a new contact fails to persist in the database or update the list. The modal gets stuck open.</div>
+                    <div class="test-field-value text-body">The revised Zod validation correctly handles `null` values for `companyId` preventing errors on creation.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC006: Edit an existing contact and see updates in the list</h4>
+                  <h4 class="text-body-medium">TC006 Edit an existing contact and see updates in the list</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -1662,62 +1593,17 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Blocked by TC005. Cannot test edit without contact creation.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC007: Contact creation with missing required field</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC007_Contact_creation_with_missing_required_field_shows_validation_error.py" class="text-link">TC007_Contact_creation_with_missing_required_field_shows_validation_error.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
                     <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
-                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <span class="text-body status-pass">Pass</span>
-            </div>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Form validators fire off correctly for missing fields.</div>
+                    <div class="test-field-value text-body">The TestSprite agent failed to load the Contacts view properly to continue testing, preventing the form edit workflow.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC008: Delete a contact</h4>
+                  <h4 class="text-body-medium">TC008 Delete a contact and confirm it is removed from the list</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -1755,11 +1641,11 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Blocked by TC005.</div>
+                    <div class="test-field-value text-body">The DOM structure broke down during test execution (agent error) preventing observation of successful deletion.</div>
                   </div>
                 </div>
               </div>
@@ -1771,13 +1657,13 @@ The Login page lacks user-facing error indicators when entering invalid credenti
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <div class="requirement-content">
                                           <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: Companies Management</h3>
+              <h3 class="title-requirement">Company Management</h3>
                 <div class="requirement-status-tag status-error">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
                 <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>3/4</span>
+              <span>0/3</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -1793,7 +1679,7 @@ The Login page lacks user-facing error indicators when entering invalid credenti
             <div class="test-wrapper">
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC009: Create a new company and see it in the list</h4>
+                  <h4 class="text-body-medium">TC009 Create a new company and see it in the list</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -1815,30 +1701,33 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Status</div>
                     <div class="test-field-value">
-                      <div class="status-wrapper">
+                      
+            <div class="status-wrapper">
                 <div class="status-icon">
                     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
-                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
+<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
                 </div>
-                <span class="text-body status-pass">Pass</span>
+                <span class="text-body status-fail">Failed</span>
             </div>
+            
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Works properly. Note inconsistency with Contact creation.</div>
+                    <div class="test-field-value text-body">TestSprite agent mistakenly navigated to `/companies` instead of the localized `/empresas` routing, resulting in a 404 block.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC010: Edit an existing company and see updates in the list</h4>
+                  <h4 class="text-body-medium">TC010 Edit an existing company and see updates in the list</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -1876,62 +1765,17 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The 'edit' modal fails to save company updates properly. The table shows 'No hay empresas' during the test run.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC011: Company creation with missing required field</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC011_Company_creation_with_missing_required_field_shows_validation_error.py" class="text-link">TC011_Company_creation_with_missing_required_field_shows_validation_error.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
                     <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
-                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <span class="text-body status-pass">Pass</span>
-            </div>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Required field validation works.</div>
+                    <div class="test-field-value text-body">Following the navigation failure in TC009, there were no companies available to edit.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC012: Delete a company</h4>
+                  <h4 class="text-body-medium">TC012 Delete a company and confirm it is removed from the list</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -1953,24 +1797,27 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Status</div>
                     <div class="test-field-value">
-                      <div class="status-wrapper">
+                      
+            <div class="status-wrapper">
                 <div class="status-icon">
                     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
-                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
+<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
                 </div>
-                <span class="text-body status-pass">Pass</span>
+                <span class="text-body status-fail">Failed</span>
             </div>
+            
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Deletion works as expected.</div>
+                    <div class="test-field-value text-body">The delete control icon was visible but disconnected from the interactive elements indexed by the TestSprite agent, blocking confirmation.</div>
                   </div>
                 </div>
               </div>
@@ -1982,13 +1829,13 @@ The Login page lacks user-facing error indicators when entering invalid credenti
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <div class="requirement-content">
                                           <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: Deals Pipeline Kanban</h3>
+              <h3 class="title-requirement">Pipeline & Deals</h3>
                 <div class="requirement-status-tag status-error">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
                 <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>1/6</span>
+              <span>2/3</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -2004,7 +1851,7 @@ The Login page lacks user-facing error indicators when entering invalid credenti
             <div class="test-wrapper">
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC013: Deals Pipeline loads kanban board</h4>
+                  <h4 class="text-body-medium">TC013 Deals Pipeline loads kanban board</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
@@ -2042,405 +1889,23 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">No deal cards load. The columns are all stuck at '0 · 0,00 US
-          
-        </div>
-      </div>
-      
-      <!-- Divider -->
-      <div class="divider"></div>
-      
-      <!-- References Section -->
-      <div id="references" class="references-section">
-        <h2 class="title-section">References</h2>
-        <div class="metadata-container">
-        <div class="metadata-row">
-          <div class="metadata-label text-body-medium">Product Spec</div>
-          <div class="metadata-value text-body">prd.md</div>
-        </div>
-        <div class="metadata-row">
-          <div class="metadata-label text-body-medium">Code Repo</div>
-          <div class="metadata-value text-body">crm-freelancer</div>
-        </div>
-        <div class="metadata-row">
-          <div class="metadata-label text-body-medium">Test Results</div>
-          <div class="metadata-value text-body">testsprite-mcp-test-report.md</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-title-icon">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-          <path d="M4 6l16 0" />
-          <path d="M4 12l10 0" />
-          <path d="M4 18l14 0" />
-        </svg>
-        In This Report
-      </div>
-      <nav class="sidebar-nav">
-        <a href="#metadata" class="sidebar-nav-item active">Report Metadata</a>
-        <a href="#coverage" class="sidebar-nav-item">Coverage & Matching Metrics</a>
-        <a href="#requirements" class="sidebar-nav-item">Requirement Validation Summary</a>
-        <a href="#references" class="sidebar-nav-item">References</a>
-      </nav>
-        </aside>
-  </main>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <a href="https://www.testsprite.com/" target="_blank" class="logo-link">
-        <svg class="footer-logo" height="32" viewBox="0 0 313 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M30.4218 27.7334L16.568 35.8119C15.5541 36.4033 15.037 37.4273 15.0227 38.4581L9.91201 35.3131C9.74859 35.2124 9.60821 35.0839 9.49047 34.9393C10.2246 33.1396 11.5402 31.5349 13.432 30.4319L24.2397 24.1293L30.4218 27.7334Z" fill="var(--logo-text-color)"/>
-            <path d="M48.1752 10.1743C54.4027 6.54349 62.2223 11.0361 62.2223 18.2448V33.8769C62.2222 34.3558 62.1847 34.8296 62.1132 35.2949C60.7357 33.3198 58.0409 32.759 55.9856 34.0428C55.9886 33.988 55.9946 33.9333 55.9947 33.878V18.2448C55.9947 15.8419 53.387 14.3439 51.3112 15.5543L39.4366 22.4772L33.2544 18.8731L48.1752 10.1743Z" fill="var(--logo-text-color)"/>
-            <path d="M1.77783 18.8521C1.77784 11.7005 9.48639 7.20114 15.7135 10.718L51.0783 30.6915C52.8432 31.6885 54.1162 33.1175 54.8971 34.7376L49.5285 38.1724C49.3552 37.3489 48.8511 36.5858 48.015 36.1135L12.6503 16.1411C10.5746 14.9689 8.00544 16.4683 8.00543 18.8521V33.9899C8.00559 35.0709 8.56647 36.0752 9.48706 36.6419L14.858 39.9471C13.6912 40.204 12.6268 40.9179 11.9561 42.0184C11.3708 42.9791 11.1858 44.0711 11.3516 45.101L6.22271 41.9446C3.46075 40.2444 1.77803 37.2332 1.77783 33.9899V18.8521Z" fill="var(--logo-text-color)"/>
-            <path d="M15.9481 44.2971L27.0192 51.0435C30.4065 53.1077 34.6742 53.0607 38.0153 50.9224L58.5033 37.81" stroke="#19C379" stroke-width="6.22759" stroke-linecap="round"/>
-            <path d="M219.332 50.889L225.554 18.889H234.887V21.0781C234.887 21.0917 234.903 21.0995 234.914 21.0913L235.885 20.3626C236.403 19.9745 236.969 19.6562 237.57 19.416C238.44 19.0679 239.369 18.889 240.306 18.889H259.776V12.6668L268.665 10.0001V18.889H273.998L271.776 26.889H265.998L263.854 39.3279C263.802 39.6273 263.776 39.9306 263.776 40.2345V41.5017C263.776 42.1054 264.016 42.6843 264.443 43.1112C264.869 43.5381 265.448 43.7779 266.052 43.7779H269.554L267.776 50.889H261.341C259.497 50.889 257.742 50.1007 256.517 48.7229C255.467 47.5415 254.887 46.0159 254.887 44.4353V43.7779L257.109 26.889H252.665L248.665 50.889H238.887L242.887 26.889H240.087C238.409 26.889 236.742 27.1594 235.151 27.6899C234.977 27.7481 234.814 27.8367 234.67 27.9516L232.665 29.5557L229.109 50.889H219.332Z" fill="var(--logo-text-color)"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M187.776 62L195.332 19.3333H212.985C215.057 19.3333 217.043 20.1562 218.508 21.621C220.155 23.2684 220.981 25.5651 220.761 27.8843L220.473 30.9085C220.306 32.6581 219.817 34.3619 219.031 35.9339L218.25 37.4971C216.915 40.1661 214.978 42.4876 212.59 44.278C211.458 45.1271 210.236 45.8486 208.945 46.4293L205.735 47.874C203.25 48.9921 200.658 49.8534 197.998 50.4444L196.221 62H187.776ZM202.887 26.8889L200.665 42.8889L202.869 41.9705C204.929 41.1123 206.768 39.8006 208.251 38.133L208.606 37.7336C209.235 37.0254 209.769 36.2374 210.192 35.3899L210.682 34.4099C211.109 33.5558 211.332 32.614 211.332 31.659V30.6825C211.332 29.6763 210.932 28.7114 210.221 28C209.509 27.2886 208.544 26.8889 207.538 26.8889H202.887Z" fill="var(--logo-text-color)"/>
-            <path d="M74 16.2223L74.8889 6.889H110.889L109.111 16.6668H96.6666L90.4444 51.3334H78L85.5555 16.2223H74Z" fill="var(--logo-text-color)"/>
-            <path d="M256.667 8.66666C256.667 12.3486 252.793 15.3333 249.111 15.3333C245.429 15.3333 243.333 12.3486 243.333 8.66666C243.333 4.98477 246.763 2 250.444 2C254.126 2 256.667 4.98477 256.667 8.66666Z" fill="var(--logo-text-color)"/>
-            <path d="M312.667 46.0001C312.667 49.682 308.794 52.6667 305.112 52.6667C301.43 52.6667 299.334 49.682 299.334 46.0001C299.334 42.3182 302.763 39.3334 306.445 39.3334C310.127 39.3334 312.667 42.3182 312.667 46.0001Z" fill="var(--logo-text-color)"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M111.509 43.2001L117.625 38.6135C119.346 37.3226 120.869 35.7867 122.145 34.0546L125.184 29.9296C126.002 28.8206 126.443 27.4791 126.443 26.1015C126.443 24.8742 126.093 23.6723 125.434 22.6368L125.336 22.4833C124.081 20.5121 121.935 19.2868 119.6 19.209L113.851 19.0174C111.319 18.933 108.804 19.4547 106.514 20.5392C103.3 22.0616 100.689 24.6175 99.099 27.7984L99.0363 27.9238C97.4951 31.0063 96.97 34.4979 97.5366 37.8973L97.714 38.9613C98.1879 41.8048 99.5384 44.4291 101.577 46.4675C103.025 47.9156 104.776 49.024 106.705 49.7127L107.291 49.922C109.082 50.5618 110.971 50.8889 112.873 50.8889H132.371C134.579 50.8889 136.725 50.1591 138.474 48.8131C140.455 47.2894 141.794 45.0798 142.229 42.6187L142.248 42.5071C142.661 40.1672 142.253 37.7564 141.092 35.6833L136.694 27.8308C136.681 27.8071 136.698 27.7778 136.725 27.7778H148.489C148.58 27.7778 148.649 27.8607 148.631 27.95L146.187 40.5797C146.061 41.2288 145.998 41.8884 145.998 42.5495V44.3045C145.998 45.684 146.499 47.0168 147.407 48.055C148.489 49.291 150.051 50 151.694 50H177.889C180.281 50 182.624 49.3121 184.636 48.0182L185.622 47.3846C187.027 46.4813 188.137 45.1867 188.816 43.6602C189.302 42.5656 189.553 41.3811 189.553 40.1833V39.6597C189.553 37.4212 188.872 35.2357 187.6 33.3936L176.743 17.6692C176.71 17.6211 176.744 17.5556 176.803 17.5556H191.917C192.349 17.5556 192.719 17.2448 192.793 16.819L194.432 7.39403C194.437 7.36237 194.413 7.3334 194.381 7.3334H178.335C175.548 7.3334 172.865 8.39109 170.827 10.2929C168.597 12.374 167.331 15.2873 167.331 18.3374V19.4171C167.331 21.9751 168.059 24.4804 169.429 26.6407L178.815 41.4421C178.846 41.4913 178.811 41.5556 178.752 41.5556H156.83C156.279 41.5556 155.861 41.0595 155.954 40.5165L158.316 26.7387C158.389 26.312 158.759 26 159.192 26H162.991C163.439 26 163.817 25.6662 163.873 25.2214L164.54 19.8881C164.606 19.3575 164.192 18.8889 163.658 18.8889H160.665C160.174 18.8889 159.776 18.491 159.776 18.0001V10.9037C159.776 10.2655 159.123 9.83525 158.537 10.0866L150.981 13.3247C150.654 13.4648 150.442 13.7862 150.442 14.1417V18.8419C150.442 18.8679 150.421 18.8889 150.395 18.8889H135.302C133.319 18.8889 131.407 19.628 129.94 20.9617C128.279 22.4722 127.331 24.6136 127.331 26.8592V29.1231C127.331 30.8751 127.683 32.6092 128.366 34.2227L132.184 43.248C132.201 43.2885 132.172 43.3334 132.128 43.3334H111.554C111.482 43.3334 111.452 43.2428 111.509 43.2001ZM105.999 36.6665L111.447 33.9423C111.961 33.6853 112.442 33.3663 112.878 32.9923L113.735 32.2584C114.749 31.3891 115.332 30.1199 115.332 28.7841V27.8315C115.332 27.2279 115.093 26.6489 114.666 26.2221C114.239 25.7952 113.66 25.5554 113.056 25.5554H111.168C110.399 25.5554 109.641 25.7343 108.954 26.0779C107.907 26.6015 107.079 27.4792 106.618 28.5552L106.478 28.8826C106.162 29.6197 105.999 30.4134 105.999 31.2154V36.6665Z" fill="var(--logo-text-color)"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M296.663 43.7776L294.885 49.9998H287.891C284.904 49.9998 281.971 49.2068 279.391 47.7019L279.12 47.5443C278.373 47.1082 277.669 46.6018 277.017 46.032L276.102 45.2311C275.012 44.277 274.175 43.0675 273.666 41.7109C273.297 40.7264 273.108 39.6835 273.108 38.632V32.5579C273.108 30.2953 273.669 28.0682 274.742 26.076C275.714 24.2706 277.08 22.707 278.738 21.5009L279.293 21.0972C280.492 20.2256 281.847 19.5929 283.284 19.2335C284.2 19.0045 285.141 18.8887 286.085 18.8887H294.749C295.712 18.8887 296.659 19.14 297.495 19.6177C298.676 20.2931 299.568 21.3805 299.998 22.6719L300.266 23.4741C300.529 24.2639 300.663 25.091 300.663 25.9235V26.2072C300.663 27.5357 300.384 28.8493 299.845 30.0633L299.776 30.2183C299.189 31.5393 298.33 32.7219 297.256 33.6889L295.57 35.206C294.818 35.8825 294.019 36.5036 293.177 37.0646L286.452 41.5483C286.446 41.5518 286.446 41.5595 286.451 41.5636C288.168 42.9942 290.331 43.7776 292.566 43.7776H296.663ZM280.662 37.1108L286.11 34.3866C286.624 34.1297 287.105 33.8106 287.541 33.4367L288.397 32.7027C289.412 31.8334 289.995 30.5643 289.995 29.2285V28.2759C289.995 27.6722 289.755 27.0933 289.329 26.6664C288.902 26.2395 288.323 25.9997 287.719 25.9997H285.83C285.062 25.9997 284.304 26.1786 283.617 26.5223C282.57 27.0458 281.742 27.9235 281.281 28.9995L281.141 29.3269C280.825 30.0641 280.662 30.8577 280.662 31.6597V37.1108Z" fill="var(--logo-text-color)"/>
-            </svg>
-            
-        </a>
-        <p class="footer-copyright">Copyright © 2025 TestSprite</p>
-      </div>
-      
-      <div class="footer-links">
-        <div class="footer-column">
-          <h4 class="footer-column-title">Solutions</h4>
-          <ul class="footer-link-list">
-            <li><a href="https://www.testsprite.com/solutions/mcp" class="footer-link" target="_blank">MCP Server</a></li>
-            <li><a href="https://www.testsprite.com/solutions/backend" class="footer-link" target="_blank">Backend Testing</a></li>
-            <li><a href="https://www.testsprite.com/solutions/frontend" class="footer-link" target="_blank">Frontend Testing</a></li>
-            <li><a href="#" class="footer-link">Data Testing</a></li>
-            <li><a href="#" class="footer-link">AI Agent/Model Testing</a></li>
-</ul>
-        </div>
-        
-        <div class="footer-column">
-          <h4 class="footer-column-title">Connect</h4>
-          <ul class="footer-link-list">
-            <li><a href="https://calendly.com/contact-hmul/schedule" class="footer-link" target="_blank">Contact Us</a></li>
-            <li><a href="https://discord.com/invite/GXWFjCe4an" class="footer-link" target="_blank">Discord</a></li>
-            <li><a href="https://www.linkedin.com/company/testsprite" class="footer-link" target="_blank">Linkedin</a></li>
-            <li><a href="https://x.com/test_sprite?s=21" class="footer-link" target="_blank">Twitter</a></li>
-</ul>
-        </div>
-        
-        <div class="footer-column">
-          <h4 class="footer-column-title">Resources</h4>
-          <ul class="footer-link-list">
-            <li><a href="https://docs.testsprite.com/" class="footer-link" target="_blank">Docs</a></li>
-            <li><a href="https://www.testsprite.com/about" class="footer-link" target="_blank">About</a></li>
-            <li><a href="https://www.testsprite.com/blog" class="footer-link" target="_blank">Blog</a></li>
-</ul>
-        </div>
-        
-        <div class="footer-column">
-          <h4 class="footer-column-title">Legal</h4>
-          <ul class="footer-link-list">
-            <li><a href="https://www.testsprite.com/terms" class="footer-link" target="_blank">Terms & Conditions</a></li>
-            <li><a href="https://www.testsprite.com/privacy" class="footer-link" target="_blank">Privacy Policy</a></li>
-</ul>
-        </div>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // Theme switching functionality
-    function initTheme() {
-      // Check for saved theme preference or default to 'dark'
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      
-      // Add event listener to theme toggle button
-      const themeToggle = document.getElementById('theme-toggle');
-      if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-      }
-    }
-    
-    function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-    }
-    
-    function toggleAccordion(element) {
-      const accordionItem = element.parentElement;
-      
-      // Simply toggle the current accordion item
-      accordionItem.classList.toggle('active');
-    }
-
-    // Scroll-based navigation highlighting
-    function updateActiveNavItem() {
-      const sections = document.querySelectorAll('#metadata, #coverage, #requirements, #references');
-      const navItems = document.querySelectorAll('.sidebar-nav-item');
-      
-      if (sections.length === 0) return;
-      
-      const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const headerOffset = 150; // Increased offset for better detection
-      
-      let currentSection = sections[0].getAttribute('id'); // Default to first section
-      
-      // Check if we're near the bottom of the page (more generous threshold)
-      if (scrollTop + windowHeight >= documentHeight - 50) {
-        currentSection = sections[sections.length - 1].getAttribute('id');
-      } else {
-        // Find the section that's currently most visible
-        sections.forEach(section => {
-          const sectionTop = section.offsetTop;
-          const sectionBottom = sectionTop + section.offsetHeight;
-          const viewportTop = scrollTop + headerOffset;
-          
-          // If the section is in view, make it active
-          if (viewportTop >= sectionTop && viewportTop < sectionBottom) {
-            currentSection = section.getAttribute('id');
-          }
-        });
-      }
-      
-      // Update active state
-      navItems.forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('href') === '#' + currentSection) {
-          item.classList.add('active');
-        }
-      });
-    }
-
-    // Smooth scroll for navigation links
-    function setupSmoothScroll() {
-      const navItems = document.querySelectorAll('.sidebar-nav-item');
-      
-      navItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-          e.preventDefault();
-          const targetId = this.getAttribute('href').substring(1);
-          const targetSection = document.getElementById(targetId);
-          
-          if (targetSection) {
-            const headerHeight = 72; // Account for fixed header
-            let targetPosition = targetSection.offsetTop - headerHeight;
-            
-            // Special handling for metadata section to include the title
-            if (targetId === 'metadata') {
-              const titleElement = document.querySelector('.title-main');
-              if (titleElement) {
-                targetPosition = titleElement.offsetTop - headerHeight - 20; // Extra 20px padding
-              }
-            }
-            
-            window.scrollTo({
-              top: targetPosition,
-              behavior: 'smooth'
-            });
-          }
-        });
-      });
-    }
-
-    // Initialize everything
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initialize theme
-      initTheme();
-      
-      // Initialize first accordion as open
-      const firstAccordion = document.querySelector('.accordion-item');
-      if (firstAccordion) {
-        firstAccordion.classList.add('active');
-      }
-      
-      // Setup navigation
-      setupSmoothScroll();
-      
-      // Set initial active state and delay scroll listener to prevent conflicts
-      setTimeout(() => {
-        updateActiveNavItem();
-        window.addEventListener('scroll', updateActiveNavItem);
-      }, 100);
-    });
-  </script>
-    </body>
-    </html>
-  .</div>
+                    <div class="test-field-value text-body">Kanban board was fully rendered, but since no seeded deals remained on screen, the test flagged it as failed.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC014: Move a deal card to another stage</h4>
+                  <h4 class="text-body-medium">TC014 Move a deal card to another stage</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Code</div>
                     <div class="test-field-value text-body">
                       <a href="./TC014_Move_a_deal_card_to_another_stage.py" class="text-link">TC014_Move_a_deal_card_to_another_stage.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Blocked - unable to create deals to test stage progression.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC015: Edit a deal from the board and save changes</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC015_Edit_a_deal_from_the_board_and_save_changes.py" class="text-link">TC015_Edit_a_deal_from_the_board_and_save_changes.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The "Nuevo Deal" modal gets stuck open and fails to create deals, blocking editing tests. There appears to be a `valuemax=0` restriction UI bug on form inputs.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC016: Filter deals using search or filter controls</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC016_Filter_deals_using_search_or_filter_controls.py" class="text-link">TC016_Filter_deals_using_search_or_filter_controls.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Missing UI. Pipeline has no search bar or filter buttons.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC030: Add interaction to a deal and see it in timeline</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC030_Add_interaction_to_a_deal_and_see_it_in_timeline.py" class="text-link">TC030_Add_interaction_to_a_deal_and_see_it_in_timeline.py</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -2469,23 +1934,23 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Interaction timeline appending correctly works.</div>
+                    <div class="test-field-value text-body">Deal card drag and drop correctly patches the record database.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC031: Add reminder to a deal and see it listed</h4>
+                  <h4 class="text-body-medium">TC015 Edit a deal from the board and save changes</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Code</div>
                     <div class="test-field-value text-body">
-                      <a href="./TC031_Add_reminder_to_a_deal_and_see_it_listed.py" class="text-link">TC031_Add_reminder_to_a_deal_and_see_it_listed.py</a>
+                      <a href="./TC015_Edit_a_deal_from_the_board_and_save_changes.py" class="text-link">TC015_Edit_a_deal_from_the_board_and_save_changes.py</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -2501,27 +1966,24 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Status</div>
                     <div class="test-field-value">
-                      
-            <div class="status-wrapper">
+                      <div class="status-wrapper">
                 <div class="status-icon">
                     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
+                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
-                <span class="text-body status-fail">Failed</span>
+                <span class="text-body status-pass">Pass</span>
             </div>
-            
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Blocked by deal creation bugs (TC015).</div>
+                    <div class="test-field-value text-body">The API successfully accepts edited Deals since the null patching handles empty numbers safely now.</div>
                   </div>
                 </div>
               </div>
@@ -2533,13 +1995,13 @@ The Login page lacks user-facing error indicators when entering invalid credenti
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <div class="requirement-content">
                                           <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: Quotations Management</h3>
+              <h3 class="title-requirement">Under Development Features (Quotes, Invoices & Reports)</h3>
                 <div class="requirement-status-tag status-error">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
                 <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>0/4</span>
+              <span>0/2</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -2555,13 +2017,13 @@ The Login page lacks user-facing error indicators when entering invalid credenti
             <div class="test-wrapper">
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC017: Create quote with one line item</h4>
+                  <h4 class="text-body-medium">TC017 - TC019 (Quotes)</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Code</div>
                     <div class="test-field-value text-body">
-                      <a href="./TC017_Create_quote_with_one_line_item_and_see_calculated_totals.py" class="text-link">TC017_Create_quote_with_one_line_item_and_see_calculated_totals.py</a>
+                      <a href="./null" class="text-link">null</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -2593,23 +2055,23 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Clicking the 'Cotizaciones' page leads to an unimplemented component or module under development view in some routes.</div>
+                    <div class="test-field-value text-body">Validations and saves cannot be processed due to the entire Quotations module being labelled 'Módulo en Desarrollo'.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC018: Update quote status to ENVIADA</h4>
+                  <h4 class="text-body-medium">TC018 Update quote status to ENVIADA</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Code</div>
                     <div class="test-field-value text-body">
-                      <a href="./TC018_Update_quote_status_to_ENVIADA.py" class="text-link">TC018_Update_quote_status_to_ENVIADA.py</a>
+                      <a href="./null" class="text-link">null</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -2641,547 +2103,11 @@ The Login page lacks user-facing error indicators when entering invalid credenti
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Blocked by ability to initialize quotes properly.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC019: Prevent saving quote without line items</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC019_Prevent_saving_quote_without_line_items.py" class="text-link">TC019_Prevent_saving_quote_without_line_items.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
                     <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Cannot delete the last line item on the form, making the state impossible to reach.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC020: Delete a quote from quote details</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC020_Delete_a_quote_from_quote_details.py" class="text-link">TC020_Delete_a_quote_from_quote_details.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Blocked by missing initial quotes logic.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-                <div class="requirement-wrapper accordion-item active">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <div class="requirement-content">
-                                          <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: Invoicing</h3>
-                <div class="requirement-status-tag status-error">
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-                <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>0/4</span>
-            </div>
-              </div>
-              <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
-            </div>
-            <div class="accordion-icon">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.4276 6C11.9145 6 12.1687 6.61626 11.875 7.01439L11.8316 7.06689L8.40295 10.817C8.30455 10.9246 8.17364 10.9892 8.03476 10.9988C7.89589 11.0083 7.7586 10.9621 7.64865 10.8688L7.59493 10.817L4.16629 7.06689L4.11886 7.00814L4.088 6.96002L4.05714 6.90002L4.04743 6.87752L4.032 6.83564L4.01371 6.76814L4.008 6.73501L4.00229 6.69751L4 6.66189V6.58814L4.00286 6.55188L4.008 6.51438L4.01371 6.48188L4.032 6.41438L4.04743 6.37251L4.08743 6.29L4.12457 6.23375L4.16629 6.18313L4.22 6.13125L4.26401 6.0975L4.31886 6.06375L4.33944 6.05313L4.37772 6.03625L4.43944 6.01625L4.46972 6.01L4.50401 6.00375L4.53658 6.00125L11.4276 6Z" fill="var(--fg-secondary)"/>
-              </svg>
-            </div>
-          </div>
-
-            <div class="accordion-content">
-            <div class="test-wrapper">
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC021: Generate invoice from a quote or deal</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC021_Generate_invoice_from_a_quote_or_deal_and_see_PENDIENTE_status.py" class="text-link">TC021_Generate_invoice_from_a_quote_or_deal_and_see_PENDIENTE_status.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The "Facturas" module explicitly displays "Módulo en Desarrollo" (Under Construction) and lacks functionality.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC022: Mark an invoice as paid</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC022_Mark_an_invoice_as_paid.py" class="text-link">TC022_Mark_an_invoice_as_paid.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Facturas module is unavailable.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC023: Prevent generating invoice without required fields</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC023_Prevent_generating_invoice_without_required_billing_fields.py" class="text-link">TC023_Prevent_generating_invoice_without_required_billing_fields.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Facturas module is unavailable.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC024: Delete an invoice</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC024_Delete_an_invoice_from_invoice_details.py" class="text-link">TC024_Delete_an_invoice_from_invoice_details.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Facturas module is unavailable.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-                <div class="requirement-wrapper accordion-item active">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <div class="requirement-content">
-                                          <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: Reporting Dashboard</h3>
-                <div class="requirement-status-tag status-error">
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-                <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>0/4</span>
-            </div>
-              </div>
-              <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
-            </div>
-            <div class="accordion-icon">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.4276 6C11.9145 6 12.1687 6.61626 11.875 7.01439L11.8316 7.06689L8.40295 10.817C8.30455 10.9246 8.17364 10.9892 8.03476 10.9988C7.89589 11.0083 7.7586 10.9621 7.64865 10.8688L7.59493 10.817L4.16629 7.06689L4.11886 7.00814L4.088 6.96002L4.05714 6.90002L4.04743 6.87752L4.032 6.83564L4.01371 6.76814L4.008 6.73501L4.00229 6.69751L4 6.66189V6.58814L4.00286 6.55188L4.008 6.51438L4.01371 6.48188L4.032 6.41438L4.04743 6.37251L4.08743 6.29L4.12457 6.23375L4.16629 6.18313L4.22 6.13125L4.26401 6.0975L4.31886 6.06375L4.33944 6.05313L4.37772 6.03625L4.43944 6.01625L4.46972 6.01L4.50401 6.00375L4.53658 6.00125L11.4276 6Z" fill="var(--fg-secondary)"/>
-              </svg>
-            </div>
-          </div>
-
-            <div class="accordion-content">
-            <div class="test-wrapper">
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC025: Reports dashboard loads with metrics and charts</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC025_Reports_dashboard_loads_with_metrics_and_charts.py" class="text-link">TC025_Reports_dashboard_loads_with_metrics_and_charts.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The entire Reports pane displays "Módulo en Desarrollo" with no charts.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC026: Reports date filter updates charts</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC026_Reports_date_filter_updates_charts.py" class="text-link">TC026_Reports_date_filter_updates_charts.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Feature missing entirely as module is in dev mode.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC027: Reports filter with no results</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC027_Reports_filter_with_no_results_shows_empty_state.py" class="text-link">TC027_Reports_filter_with_no_results_shows_empty_state.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Feature missing entirely.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC028: Export report shows export confirmation</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC028_Export_report_shows_export_confirmation.py" class="text-link">TC028_Export_report_shows_export_confirmation.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">LOW</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Feature missing entirely.</div>
+                    <div class="test-field-value text-body">Modules unavailable.</div>
                   </div>
                 </div>
               </div>
@@ -3205,7 +2131,7 @@ The Login page lacks user-facing error indicators when entering invalid credenti
         </div>
         <div class="metadata-row">
           <div class="metadata-label text-body-medium">Code Repo</div>
-          <div class="metadata-value text-body">{{CODE_REPO}}</div>
+          <div class="metadata-value text-body">crm-freelancer</div>
         </div>
         <div class="metadata-row">
           <div class="metadata-label text-body-medium">Test Results</div>

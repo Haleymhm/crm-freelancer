@@ -33,10 +33,16 @@ async def run_test():
         # -> Navigate to http://localhost:3001
         await page.goto("http://localhost:3001", wait_until="commit", timeout=10000)
         
-        # -> Navigate to /registro and look for the registration form (or detect absence of the feature).
+        # -> Click the 'Regístrate aquí' link to open the registration page.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/div[2]/a').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+        # -> Navigate explicitly to /registro to reach the registration page.
         await page.goto("http://localhost:3001/registro", wait_until="commit", timeout=10000)
         
-        # -> Fill the registration form (name, email, password, confirm password) and submit by clicking the 'Crear Cuenta' button.
+        # -> Fill the registration form (name, email with timestamp, password, confirm password) and submit the form to trigger redirect and success notification.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
@@ -45,24 +51,29 @@ async def run_test():
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('testuser+20260326T150000@example.com')
+        await page.wait_for_timeout(3000); await elem.fill('testuser+20260330T120000@example.com')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[3]/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('ValidPass!234')
         
-        # -> Click the 'Crear Cuenta' submit button to submit the registration form and then verify redirection to the login page and presence of a success notification.
+        # -> Fill the Confirm Password field with 'ValidPass!234' (index 189) and click 'Crear Cuenta' (submit) (index 190) to register and trigger redirect to the login page.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[4]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('ValidPass!234')
+        
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
-        # -> Fill the Confirmar Contraseña field with the same password (ValidPass!234) and click 'Crear Cuenta' to submit, then verify redirection to the login page and a success notification.
+        # -> Replace the email with a new unique address and submit the registration form to retry creating the account.
         frame = context.pages[-1]
         # Input text
-        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[4]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('ValidPass!234')
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('testuser+20260330T120501@example.com')
         
         frame = context.pages[-1]
         # Click element

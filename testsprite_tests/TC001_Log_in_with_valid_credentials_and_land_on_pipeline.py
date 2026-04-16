@@ -33,10 +33,20 @@ async def run_test():
         # -> Navigate to http://localhost:3001
         await page.goto("http://localhost:3001", wait_until="commit", timeout=10000)
         
-        # -> Click the 'Seguimiento' menu item to open the pipeline dashboard and verify deals pipeline content is displayed.
+        # -> Fill the email and password fields with valid credentials and submit the form to attempt login (fill index 6, fill index 7, click index 8).
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('example@gmail.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('password123')
+        
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/nav/a[4]').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
         # --> Test passed — verified by AI agent
