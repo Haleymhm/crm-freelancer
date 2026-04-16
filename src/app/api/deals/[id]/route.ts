@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { Deal } from "@prisma/client"
 
 export async function PATCH(
     request: NextRequest,
@@ -15,7 +16,7 @@ export async function PATCH(
         const { id } = await params
         const data = await request.json()
 
-        const updateData: any = {}
+        const updateData: Partial<Deal> = {}
         if (data.stage !== undefined) {
             updateData.stage = data.stage
             if (data.stage.startsWith("CERRADO")) updateData.closedAt = new Date()
@@ -26,18 +27,19 @@ export async function PATCH(
         if (data.contactId !== undefined) updateData.contactId = data.contactId || null
         if (data.companyId !== undefined) updateData.companyId = data.companyId || null
 
-        const deal = await prisma.deal.updateMany({
-            where: { id, userId: session.user.id },
-            data: updateData,
-        })
-
-        if (deal.count === 0) {
+        let deal
+        try {
+            deal = await prisma.deal.update({
+                where: { id, userId: session.user.id },
+                data: updateData,
+            })
+        } catch (error) {
             return NextResponse.json({ error: "Deal no encontrado" }, { status: 404 })
         }
 
         return NextResponse.json({ success: true })
     } catch (error) {
-        return NextResponse.json({ error: "Error al actualizar deal" }, { status: 500 })
+        return NextResponse.json({ error: "Error al actualizar deal" + error }, { status: 500 })
     }
 }
 
@@ -63,6 +65,6 @@ export async function DELETE(
 
         return NextResponse.json({ success: true })
     } catch (error) {
-        return NextResponse.json({ error: "Error al eliminar deal" }, { status: 500 })
+        return NextResponse.json({ error: "Error al eliminar deal" + error }, { status: 500 })
     }
 }

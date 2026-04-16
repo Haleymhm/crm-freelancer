@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth()
@@ -12,8 +12,10 @@ export async function GET(
             return NextResponse.json({ error: "No autorizado" }, { status: 401 })
         }
 
+        const { id } = await params
+
         const company = await prisma.company.findFirst({
-            where: { id: params.id, userId: session.user.id },
+            where: { id, userId: session.user.id },
         })
 
         if (!company) {
@@ -29,7 +31,7 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth()
@@ -37,11 +39,13 @@ export async function PUT(
             return NextResponse.json({ error: "No autorizado" }, { status: 401 })
         }
 
+        const { id } = await params
+
         const data = await request.json()
         const { name, email, phone, website, address } = data
 
         const company = await prisma.company.updateMany({
-            where: { id: params.id, userId: session.user.id },
+            where: { id, userId: session.user.id },
             data: {
                 name,
                 email: email || null,
@@ -64,7 +68,7 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth()
@@ -72,8 +76,10 @@ export async function DELETE(
             return NextResponse.json({ error: "No autorizado" }, { status: 401 })
         }
 
+        const { id } = await params
+
         const company = await prisma.company.deleteMany({
-            where: { id: params.id, userId: session.user.id },
+            where: { id, userId: session.user.id },
         })
 
         if (company.count === 0) {

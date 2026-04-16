@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { QuoteDetailDialog } from "@/components/cotizaciones/quote-detail-dialog"
 
+type QuoteStatus = "BORRADOR" | "ENVIADA" | "ACEPTADA" | "RECHAZADA"
+
 interface QuoteItem {
     description: string
     quantity: number
@@ -28,7 +30,7 @@ interface QuoteItem {
 interface Quote {
     id: string
     quoteNumber: string
-    status: any
+    status: QuoteStatus
     items: QuoteItem[]
     subtotal: number | string
     tax: number | string
@@ -37,7 +39,12 @@ interface Quote {
     notes: string | null
     sentAt: string | null
     createdAt: string
-    deal: any
+    deal: {
+        id: string
+        title: string
+        contact: { firstName: string; lastName: string } | null
+        company: { name: string } | null
+    }
 }
 
 const STAGES = [
@@ -58,7 +65,7 @@ interface Deal {
     companyId?: string | null
     contact?: { firstName: string; lastName: string }
     company?: { name: string }
-    quotes?: any[]
+    quotes?: Quote[]
 }
 
 interface ContactOption {
