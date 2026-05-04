@@ -3,13 +3,15 @@ import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DollarSign, FileText, TrendingUp, Users } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
+import { RecentActivities } from "@/components/dashboard/recent-activities"
+import { PendingReminders } from "@/components/dashboard/pending-reminders"
+import { getRecentInteractions, getPendingReminders } from "@/lib/dashboard-data"
 
 async function getDashboardStats(userId: string) {
     const currentDate = new Date()
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
 
     const [activeDeals, monthlyRevenue, pendingQuotes, newContacts] = await Promise.all([
-        // Deals activos (no cerrados)
         prisma.deal.count({
             where: {
                 userId,
@@ -18,7 +20,6 @@ async function getDashboardStats(userId: string) {
                 },
             },
         }),
-        // Ingresos del mes (deals cerrados ganados)
         prisma.deal.aggregate({
             where: {
                 userId,
@@ -31,7 +32,6 @@ async function getDashboardStats(userId: string) {
                 value: true,
             },
         }),
-        // Cotizaciones pendientes
         prisma.quote.count({
             where: {
                 deal: {
@@ -40,7 +40,6 @@ async function getDashboardStats(userId: string) {
                 status: "ENVIADA",
             },
         }),
-        // Contactos nuevos del mes
         prisma.contact.count({
             where: {
                 userId,
@@ -66,7 +65,10 @@ export default async function DashboardPage() {
         return null
     }
 
-    const stats = await getDashboardStats(session.user.id)
+    const userId = session.user.id
+    const stats = await getDashboardStats(userId)
+    const recentInteractions = await getRecentInteractions(userId)
+    const pendingReminders = await getPendingReminders(userId)
 
     const cards = [
         {
@@ -123,16 +125,14 @@ export default async function DashboardPage() {
                 })}
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Bienvenido al CRM</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">
-                        Usa el menú lateral para navegar por los diferentes módulos del sistema.
-                    </p>
-                </CardContent>
-            </Card>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="lg:col-span-2">
+                    <RecentActivities interactions={recentInteractions} />
+                </div>
+                <div className="lg:col-span-1">
+                    <PendingReminders reminders={pendingReminders} />
+                </div>
+            </div>
         </div>
     )
 }
