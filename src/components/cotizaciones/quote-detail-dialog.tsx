@@ -17,7 +17,9 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { QuoteStatusBadge } from "./quote-status-badge"
-import { Pencil, Trash2, SendHorizontal, CheckCircle, XCircle } from "lucide-react"
+import { QuotePdf } from "./quote-pdf"
+import { Pencil, Trash2, SendHorizontal, CheckCircle, XCircle, FileDown } from "lucide-react"
+import { pdf } from "@react-pdf/renderer"
 
 type QuoteStatus = "BORRADOR" | "ENVIADA" | "ACEPTADA" | "RECHAZADA"
 
@@ -103,6 +105,16 @@ export function QuoteDetailDialog({
         } finally {
             setActionLoading(false)
         }
+    }
+
+    const handleExportPdf = async () => {
+        const blob = await pdf(<QuotePdf quote={quote} />).toBlob()
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.href = url
+        link.download = `${quote.quoteNumber}.pdf`
+        link.click()
+        URL.revokeObjectURL(url)
     }
 
     const clientName = quote.deal.contact
@@ -199,6 +211,14 @@ export function QuoteDetailDialog({
 
                     {/* Acciones */}
                     <div className="flex flex-wrap gap-2 border-t pt-4">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleExportPdf}
+                        >
+                            <FileDown className="h-4 w-4 mr-1.5" />
+                            Exportar PDF
+                        </Button>
                         {quote.status === "BORRADOR" && (
                             <>
                                 <Button
