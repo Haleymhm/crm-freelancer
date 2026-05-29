@@ -232,7 +232,7 @@ export function InvoiceForm({ open, onOpenChange, preselectedDealId, onSuccess }
                                                 <SelectValue placeholder="Sin cotización" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="">Sin cotización</SelectItem>
+                                                <SelectItem value="none">Sin cotización</SelectItem>
                                                 {quotes.map((quote) => (
                                                     <SelectItem key={quote.id} value={quote.id}>
                                                         {quote.quoteNumber}
