@@ -6,7 +6,7 @@ import { Bell, Clock, CheckCircle } from "lucide-react"
 interface Reminder {
     id: string
     message: string
-    dueDate: string
+    dueDate: string | Date
     completed: boolean
     deal: {
         title: string

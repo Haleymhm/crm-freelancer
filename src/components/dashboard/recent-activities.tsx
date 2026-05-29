@@ -11,7 +11,7 @@ interface Interaction {
     contact?: { firstName: string; lastName: string } | null
     company?: { name: string } | null
     deal?: { title: string } | null
-    interactionDate: string
+    interactionDate: string | Date
 }
 
 interface RecentActivitiesProps {
