@@ -12,16 +12,31 @@ async function generateQuoteNumber(userId: string): Promise<string> {
     const year = new Date().getFullYear()
     const prefix = `COT-${year}-`
 
-    // Cuenta las cotizaciones de este año para el usuario
-    const count = await prisma.quote.count({
-        where: {
-            deal: { userId },
-            quoteNumber: { startsWith: prefix },
-        },
-    })
+    return await prisma.$transaction(async (tx) => {
+        for (let attempt = 0; attempt < 10; attempt++) {
+            const lastQuote = await tx.quote.findFirst({
+                where: {
+                    deal: { userId },
+                    quoteNumber: { startsWith: prefix },
+                },
+                orderBy: { quoteNumber: "desc" },
+            })
 
-    const sequence = String(count + 1).padStart(3, "0")
-    return `${prefix}${sequence}`
+            const sequence = lastQuote
+                ? parseInt(lastQuote.quoteNumber.split("-")[2], 10) + 1
+                : 1
+
+            const candidate = `${prefix}${String(sequence).padStart(3, "0")}`
+
+            const exists = await tx.quote.findUnique({
+                where: { quoteNumber: candidate },
+            })
+
+            if (!exists) return candidate
+        }
+
+        throw new Error("No se pudo generar número de cotización único")
+    })
 }
 
 /**
@@ -85,65 +100,70 @@ export async function GET(request: NextRequest) {
 
 // POST /api/cotizaciones — Crea una nueva cotización
 export async function POST(request: NextRequest) {
-    try {
-        const session = await auth()
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-        }
+    const maxRetries = 3
 
-        const body = await request.json()
-        const validatedData = createQuoteSchema.parse(body)
-        const { dealId, items, taxRate, validUntil, notes } = validatedData
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            const session = await auth()
+            if (!session?.user?.id) {
+                return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+            }
 
-        // Verificar que el deal pertenece al usuario
-        const deal = await prisma.deal.findFirst({
-            where: { id: dealId, userId: session.user.id },
-        })
-        if (!deal) {
-            return NextResponse.json({ error: "Deal no encontrado" }, { status: 404 })
-        }
+            const body = await request.json()
+            const validatedData = createQuoteSchema.parse(body)
+            const { dealId, items, taxRate, validUntil, notes } = validatedData
 
-        // Calcular totales en servidor
-        const { subtotal, tax, total } = calculateTotals(items, taxRate ?? 16)
+            const deal = await prisma.deal.findFirst({
+                where: { id: dealId, userId: session.user.id },
+            })
+            if (!deal) {
+                return NextResponse.json({ error: "Deal no encontrado" }, { status: 404 })
+            }
 
-        // Generar número de cotización
-        const quoteNumber = await generateQuoteNumber(session.user.id)
+            const { subtotal, tax, total } = calculateTotals(items, taxRate ?? 16)
+            const quoteNumber = await generateQuoteNumber(session.user.id)
 
-        // Preparar ítems con total calculado
-        const processedItems = items.map((item) => ({
-            ...item,
-            total: item.quantity * item.unitPrice,
-        }))
+            const processedItems = items.map((item) => ({
+                ...item,
+                total: item.quantity * item.unitPrice,
+            }))
 
-        const quote = await prisma.quote.create({
-            data: {
-                dealId,
-                quoteNumber,
-                items: processedItems,
-                subtotal,
-                tax,
-                total,
-                validUntil: validUntil ? new Date(`${validUntil}T12:00:00Z`) : null,
-                notes: notes || null,
-            },
-            include: {
-                deal: {
-                    select: {
-                        id: true,
-                        title: true,
-                        contact: { select: { firstName: true, lastName: true } },
-                        company: { select: { name: true } },
+            const quote = await prisma.quote.create({
+                data: {
+                    dealId,
+                    quoteNumber,
+                    items: processedItems,
+                    subtotal,
+                    tax,
+                    total,
+                    validUntil: validUntil ? new Date(`${validUntil}T12:00:00Z`) : null,
+                    notes: notes || null,
+                },
+                include: {
+                    deal: {
+                        select: {
+                            id: true,
+                            title: true,
+                            contact: { select: { firstName: true, lastName: true } },
+                            company: { select: { name: true } },
+                        },
                     },
                 },
-            },
-        })
+            })
 
-        return NextResponse.json(quote, { status: 201 })
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: "Datos inválidos", details: error.errors }, { status: 400 })
+            return NextResponse.json(quote, { status: 201 })
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return NextResponse.json({ error: "Datos inválidos", details: error.errors }, { status: 400 })
+            }
+            const prismaError = error as { code?: string }
+            if (prismaError.code === "P2002" && attempt < maxRetries - 1) {
+                continue
+            }
+            console.error("Error creating quote:", error)
+            return NextResponse.json({ error: "Error al crear cotización" }, { status: 500 })
         }
-        console.error("Error creating quote:", error)
-        return NextResponse.json({ error: "Error al crear cotización" }, { status: 500 })
     }
+
+    return NextResponse.json({ error: "Error al crear cotización" }, { status: 500 })
 }
