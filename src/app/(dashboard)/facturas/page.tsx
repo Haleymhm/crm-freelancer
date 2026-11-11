@@ -17,6 +17,13 @@ import { InvoiceDetailDialog } from "@/components/facturas/invoice-detail-dialog
 import { InvoiceStatusBadge } from "@/components/facturas/invoice-status-badge"
 import { formatCurrency } from "@/lib/utils"
 
+interface InvoiceItem {
+    description: string
+    quantity: number
+    unitPrice: number
+    total: number
+}
+
 interface Invoice {
     id: string
     invoiceNumber: string
@@ -30,7 +37,7 @@ interface Invoice {
         contact: { firstName: string; lastName: string } | null
         company: { name: string } | null
     }
-    items: any[]
+    items: InvoiceItem[]
     subtotal: number | string
     tax: number | string
     notes: string | null
