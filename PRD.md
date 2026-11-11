@@ -4,7 +4,7 @@
 "CRM Freelancer" is a comprehensive Customer Relationship Management web application designed specifically for independent professionals and freelancers. It allows users to manage their client base, track business opportunities (deals) through a visual Kanban pipeline, generate quotes, manage invoices, and maintain a history of interactions and reminders. 
 
 ## 2. Technical Stack
-- **Frontend**: React 19, Next.js 15 (App Router), Tailwind CSS, Radix UI primitives.
+- **Frontend**: React 19, Next.js 16 (App Router), Tailwind CSS, Radix UI primitives.
 - **Backend**: Next.js API Routes.
 - **Database ORM**: Prisma Client.
 - **Database Engine**: PostgreSQL.

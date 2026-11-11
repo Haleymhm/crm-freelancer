@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -89,13 +89,7 @@ export function ContactForm({ open, onOpenChange, contact, onSuccess }: ContactF
         }
     }, [contact, open, reset])
 
-    useEffect(() => {
-        if (open) {
-            fetchCompanies()
-        }
-    }, [open])
-
-    const fetchCompanies = async () => {
+    const fetchCompanies = useCallback(async () => {
         try {
             const response = await fetch("/api/empresas")
             if (response.ok) {
@@ -105,7 +99,13 @@ export function ContactForm({ open, onOpenChange, contact, onSuccess }: ContactF
         } catch (error) {
             console.error("Error fetching companies:", error)
         }
-    }
+    }, [])
+
+    useEffect(() => {
+        if (open) {
+            fetchCompanies()
+        }
+    }, [open, fetchCompanies])
 
     const onSubmit = async (data: ContactFormData) => {
         setLoading(true)
