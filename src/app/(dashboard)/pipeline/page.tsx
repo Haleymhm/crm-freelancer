@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Edit2, FileText } from "lucide-react"
+import { Plus, Trash2, Edit2, FileText, Search, UserRound } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import {
     Dialog,
@@ -195,106 +195,170 @@ export default function PipelinePage() {
     }
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold">Pipeline de Ventas</h1>
-                <Button onClick={() => {
-                    setEditingDealId(null)
-                    setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", clientId: "" })
-                    setIsFormOpen(true)
-                }}>
-                    <Plus className="mr-2 h-4 w-4" />
+        <div className="flex h-[calc(100vh-3rem)] min-h-[620px] flex-col gap-4">
+            <header className="flex shrink-0 items-center justify-between gap-4">
+                <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+                    Pipeline de Ventas
+                </h1>
+                <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium tabular-nums text-slate-500 shadow-sm">
+                    {deals.length} {deals.length === 1 ? "oportunidad" : "oportunidades"}
+                </span>
+            </header>
+
+            <div className="flex shrink-0 flex-col gap-3 border-b border-slate-200 pb-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="relative w-full sm:max-w-[260px]">
+                    <label htmlFor="pipeline-search" className="sr-only">
+                        Buscar oportunidades
+                    </label>
+                    <Search
+                        aria-hidden="true"
+                        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                    />
+                    <Input
+                        id="pipeline-search"
+                        placeholder="Buscar oportunidades..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-9 rounded-lg border-slate-200 bg-white pl-9 pr-3 text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500/20"
+                    />
+                </div>
+
+                <Button
+                    onClick={() => {
+                        setEditingDealId(null)
+                        setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", clientId: "" })
+                        setIsFormOpen(true)
+                    }}
+                    className="h-9 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700"
+                >
+                    <Plus className="h-4 w-4" />
                     Nueva Oportunidad
                 </Button>
             </div>
 
-            <div className="flex items-center space-x-2">
-                <Input
-                    placeholder="Buscar deals..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-sm"
-                />
-            </div>
+            <div
+                className="min-h-0 flex-1 overflow-x-auto pb-1"
+                role="region"
+                aria-label="Tablero de oportunidades"
+            >
+                <div className="grid h-full min-w-[1080px] grid-cols-5 gap-3">
+                    {STAGES.map((stage) => {
+                        const stageDeals = filteredDeals.filter((d) => d.stage === stage.value)
+                        const total = stageDeals.reduce((sum, d) => sum + Number(d.value), 0)
+                        const stageTitleId = `pipeline-stage-${stage.value.toLowerCase()}`
 
-            <div className="flex w-full gap-1 overflow-x-auto pb-4">
-                {STAGES.map((stage) => {
-                    const stageDeals = filteredDeals.filter((d) => d.stage === stage.value)
-                    const total = stageDeals.reduce((sum, d) => sum + Number(d.value), 0)
+                        return (
+                            <section
+                                key={stage.value}
+                                aria-labelledby={stageTitleId}
+                                className="flex h-full min-h-[420px] snap-start flex-col overflow-hidden rounded-xl bg-slate-100/90 p-2.5"
+                                onDrop={(e) => handleDrop(e, stage.value)}
+                                onDragOver={handleDragOver}
+                            >
+                                <header className="flex items-center gap-2 px-1 py-1.5">
+                                    <span
+                                        aria-hidden="true"
+                                        className={`h-2 w-2 shrink-0 rounded-full ${stage.color}`}
+                                    />
+                                    <h2
+                                        id={stageTitleId}
+                                        className="truncate text-xs font-semibold text-slate-700"
+                                    >
+                                        {stage.label}
+                                    </h2>
+                                    <span className="rounded-full bg-slate-200/80 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-slate-500">
+                                        {stageDeals.length}
+                                    </span>
+                                    <span
+                                        title={formatCurrency(total)}
+                                        className="ml-auto max-w-[92px] truncate text-[10px] font-medium tabular-nums text-slate-400"
+                                    >
+                                        {formatCurrency(total)}
+                                    </span>
+                                </header>
 
-                    return (
-                        <div
-                            key={stage.value}
-                            className="flex-1 min-w-[250px] space-y-3 min-h-[700px] overflow-y-auto border-gray-800 bg-gray-100"
-                            onDrop={(e) => handleDrop(e, stage.value)}
-                            onDragOver={handleDragOver}
-                        >
-                            <Card className={`${stage.color} text-white border-0`}>
-                                <CardHeader className="p-4">
-                                    <CardTitle className="text-sm">{stage.label}</CardTitle>
-                                    <p className="text-xs opacity-90">
-                                        {stageDeals.length} · {formatCurrency(total)}
-                                    </p>
-                                </CardHeader>
-                            </Card>
-
-                            {stageDeals.map((deal) => (
-                                <Card
-                                    key={deal.id}
-                                    draggable
-                                    onDragStart={(e) => handleDragStart(e, deal.id)}
-                                    className="cursor-move hover:shadow-lg transition-shadow relative group m-1"
-                                >
-                                    <CardContent className="p-4">
-                                        <div className="flex flex-col h-full">
-                                            <div className="flex-1 mb-6">
-                                                <h3 className="font-semibold text-sm pr-6 leading-tight mb-1">{deal.title}</h3>
-                                                <p className="text-lg font-bold text-primary">
-                                                    {formatCurrency(Number(deal.value))}
-                                                </p>
-                                                {deal.client && (
-                                                    <p className="text-xs text-muted-foreground mt-2 line-clamp-1">
-                                                        {deal.client.name}
-                                                    </p>
-                                                )}
+                                <div className="mt-1 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-0.5 pb-1">
+                                    {stageDeals.map((deal) => (
+                                        <Card
+                                            key={deal.id}
+                                            draggable
+                                            onDragStart={(e) => handleDragStart(e, deal.id)}
+                                            className="group cursor-grab rounded-lg border-slate-200/90 bg-white p-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-[0_8px_20px_rgba(15,23,42,0.08)] active:cursor-grabbing"
+                                        >
+                                            <div className="flex min-w-0 items-start justify-between gap-2">
+                                                <h3 className="line-clamp-2 min-w-0 text-[13px] font-semibold leading-[1.35] text-slate-800">
+                                                    {deal.title}
+                                                </h3>
+                                                <span
+                                                    aria-hidden="true"
+                                                    className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300 transition-colors group-hover:bg-blue-400"
+                                                />
                                             </div>
-                                            <div className="flex gap-2 absolute bottom-2 right-2">
+
+                                            <p className="mt-3 text-[13px] font-semibold tabular-nums text-slate-700">
+                                                {formatCurrency(Number(deal.value))}
+                                            </p>
+                                            {deal.client && (
+                                                <p className="mt-1.5 flex min-w-0 items-center gap-1.5 text-[11px] text-slate-500">
+                                                    <UserRound
+                                                        aria-hidden="true"
+                                                        className="h-3.5 w-3.5 shrink-0 text-slate-400"
+                                                    />
+                                                    <span className="truncate">{deal.client.name}</span>
+                                                </p>
+                                            )}
+
+                                            <div className="mt-3 flex items-center justify-end gap-1 border-t border-slate-100 pt-2">
                                                 {deal.stage === "PROPUESTA_ENVIADA" && deal.quotes && deal.quotes.length > 0 && (
                                                     <Button
-                                                        variant="secondary"
+                                                        variant="ghost"
                                                         size="icon"
-                                                        className="h-7 w-7 text-muted-foreground hover:text-green-600 transition-all"
+                                                        aria-label={`Ver cotización de ${deal.title}`}
+                                                        title="Ver cotización"
+                                                        className="h-7 w-7 rounded-md text-slate-400 hover:bg-blue-50 hover:text-blue-600"
                                                         onClick={() => openQuoteDetail(deal)}
                                                     >
-                                                        <FileText className="h-4 w-4" />
+                                                        <FileText className="h-3.5 w-3.5" />
                                                     </Button>
                                                 )}
                                                 {(deal.stage === "PROSPECTO" || deal.stage === "CONTACTADO") && (
                                                     <Button
-                                                        variant="secondary"
+                                                        variant="ghost"
                                                         size="icon"
-                                                        className="h-7 w-7 text-muted-foreground hover:text-blue-500 transition-all"
+                                                        aria-label={`Editar ${deal.title}`}
+                                                        title="Editar oportunidad"
+                                                        className="h-7 w-7 rounded-md text-slate-400 hover:bg-blue-50 hover:text-blue-600"
                                                         onClick={() => handleEditDeal(deal)}
                                                     >
-                                                        <Edit2 className="h-4 w-4" />
+                                                        <Edit2 className="h-3.5 w-3.5" />
                                                     </Button>
                                                 )}
                                                 <Button
-                                                    variant="secondary"
+                                                    variant="ghost"
                                                     size="icon"
-                                                    className="h-7 w-7 text-muted-foreground hover:text-destructive transition-all"
+                                                    aria-label={`Eliminar ${deal.title}`}
+                                                    title="Eliminar oportunidad"
+                                                    className="h-7 w-7 rounded-md text-slate-400 hover:bg-red-50 hover:text-red-600"
                                                     onClick={() => handleDelete(deal.id)}
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    <Trash2 className="h-3.5 w-3.5" />
                                                 </Button>
                                             </div>
+                                        </Card>
+                                    ))}
+
+                                    {stageDeals.length === 0 && (
+                                        <div className="flex min-h-[88px] flex-1 items-center justify-center rounded-lg border border-dashed border-slate-200 bg-white/40 px-4 text-center">
+                                            <p className="text-[11px] leading-4 text-slate-400">
+                                                Suelta una oportunidad aquí
+                                            </p>
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    )
-                })}
+                                    )}
+                                </div>
+                            </section>
+                        )
+                    })}
+                </div>
             </div>
 
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
