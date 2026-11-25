@@ -36,8 +36,7 @@ interface Invoice {
     deal: {
         id: string
         title: string
-        contact: { firstName: string; lastName: string } | null
-        company: { name: string } | null
+        client: { name: string; type?: string } | null
     }
 }
 
@@ -95,9 +94,7 @@ export function InvoiceDetailDialog({ invoice, open, onOpenChange, onStatusChang
         }
     }
 
-    const clientName = invoice.deal.contact
-        ? `${invoice.deal.contact.firstName} ${invoice.deal.contact.lastName}`
-        : invoice.deal.company?.name ?? "—"
+    const clientName = invoice.deal.client?.name ?? "—"
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

@@ -45,8 +45,7 @@ interface Quote {
     deal: {
         id: string
         title: string
-        contact: { firstName: string; lastName: string } | null
-        company: { name: string } | null
+        client: { name: string; type?: string } | null
     }
 }
 
@@ -117,9 +116,7 @@ export function QuoteDetailDialog({
         URL.revokeObjectURL(url)
     }
 
-    const clientName = quote.deal.contact
-        ? `${quote.deal.contact.firstName} ${quote.deal.contact.lastName}`
-        : quote.deal.company?.name ?? "Sin cliente"
+    const clientName = quote.deal.client?.name ?? "Sin cliente"
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

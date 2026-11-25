@@ -19,8 +19,7 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    contacts     Contact[]
-    companies    Company[]
+    clients      Client[]
     deals        Deal[]
     interactions Interaction[]
     reminders    Reminder[]
@@ -28,45 +27,32 @@ model User {
     @@map("users")
 }
 
-// Empresas/Organizaciones
-model Company {
-    id        String   @id @default(uuid())
-    name      String
-    email     String?
-    phone     String?
-    website   String?
-    address   String?
-    userId    String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-    contacts     Contact[]
-    deals        Deal[]
-    interactions Interaction[]
-
-    @@map("companies")
+enum ClientType {
+    PERSONA
+    EMPRESA
 }
 
-// Contactos individuales
-model Contact {
-    id        String   @id @default(uuid())
-    firstName String
-    lastName  String
-    email     String?
-    phone     String?
-    position  String?
-    companyId String?
-    userId    String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// Clientes (unifica personas y empresas)
+model Client {
+    id          String     @id @default(uuid())
+    type        ClientType @default(PERSONA)
+    name        String
+    taxId       String?
+    email       String?
+    phone       String?
+    contactName String?
+    website     String?
+    address     String?
+    notes       String?    @db.Text
+    userId      String
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
 
     user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-    company      Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
     deals        Deal[]
     interactions Interaction[]
 
-    @@map("contacts")
+    @@map("clients")
 }
 
 // Oportunidades de negocio / Pipeline
@@ -76,8 +62,7 @@ model Deal {
     description       String?   @db.Text
     value             Decimal   @db.Decimal(10, 2)
     stage             DealStage @default(PROSPECTO)
-    contactId         String?
-    companyId         String?
+    clientId          String?
     userId            String
     expectedCloseDate DateTime?
     closedAt          DateTime?
@@ -85,8 +70,7 @@ model Deal {
     updatedAt         DateTime  @updatedAt
 
     user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-    contact      Contact?      @relation(fields: [contactId], references: [id], onDelete: SetNull)
-    company      Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
+    client       Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
     quotes       Quote[]
     invoices     Invoice[]
     reminders    Reminder[]
@@ -169,17 +153,15 @@ model Interaction {
     type            InteractionType
     subject         String?
     notes           String?         @db.Text
-    contactId       String?
-    companyId       String?
+    clientId        String?
     dealId          String?
     userId          String
     interactionDate DateTime        @default(now())
     createdAt       DateTime        @default(now())
 
-    user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    contact Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
-    company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
-    deal    Deal?    @relation(fields: [dealId], references: [id], onDelete: SetNull)
+    user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+    deal   Deal?   @relation(fields: [dealId], references: [id], onDelete: SetNull)
 
     @@map("interactions")
 }

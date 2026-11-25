@@ -24,8 +24,9 @@ export async function PATCH(
         if (data.title !== undefined) updateData.title = data.title
         if (data.description !== undefined) updateData.description = data.description
         if (data.value !== undefined) updateData.value = data.value
-        if (data.contactId !== undefined) updateData.contactId = data.contactId || null
-        if (data.companyId !== undefined) updateData.companyId = data.companyId || null
+        if (data.clientId !== undefined) {
+            updateData.clientId = data.clientId && data.clientId !== "none" ? data.clientId : null
+        }
 
         let deal
         try {
