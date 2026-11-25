@@ -34,8 +34,7 @@ interface Invoice {
     deal: {
         id: string
         title: string
-        contact: { firstName: string; lastName: string } | null
-        company: { name: string } | null
+        client: { name: string; type?: string } | null
     }
     items: InvoiceItem[]
     subtotal: number | string
@@ -72,9 +71,7 @@ export default function FacturasPage() {
 
     const filteredInvoices = invoices.filter((inv) => {
         const search = searchTerm.toLowerCase()
-        const clientName = inv.deal.contact
-            ? `${inv.deal.contact.firstName} ${inv.deal.contact.lastName}`
-            : inv.deal.company?.name ?? ""
+        const clientName = inv.deal.client?.name ?? ""
         return (
             inv.invoiceNumber.toLowerCase().includes(search) ||
             clientName.toLowerCase().includes(search) ||
@@ -125,9 +122,7 @@ export default function FacturasPage() {
                             </TableRow>
                         ) : (
                             filteredInvoices.map((inv) => {
-                                const clientName = inv.deal.contact
-                                    ? `${inv.deal.contact.firstName} ${inv.deal.contact.lastName}`
-                                    : inv.deal.company?.name ?? "—"
+                                const clientName = inv.deal.client?.name ?? "—"
                                 return (
                                     <TableRow key={inv.id}>
                                         <TableCell className="font-mono text-sm">{inv.invoiceNumber}</TableCell>

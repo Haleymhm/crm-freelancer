@@ -9,10 +9,10 @@ async function main() {
     const hashedPassword = await bcrypt.hash("password123", 10)
 
     const user = await prisma.user.upsert({
-        where: { email: "example@gmail.com" },
+        where: { email: "haleymhm@localhost.dev" },
         update: {},
         create: {
-            email: "example@gmail.com",
+            email: "haleymhm@localhost.dev",
             password: hashedPassword,
             name: "Test User",
         },
@@ -20,102 +20,93 @@ async function main() {
 
     console.log("Created/Found user:", user.email)
 
-    const company1 = await prisma.company.upsert({
-        where: { id: "seed-company-1" },
+    const client1 = await prisma.client.upsert({
+        where: { id: "seed-client-1" },
         update: {},
         create: {
-            id: "seed-company-1",
+            id: "seed-client-1",
+            type: "EMPRESA",
             name: "ACME Corp",
+            taxId: "76.123.456-7",
             email: "contact@acme.com",
-            phone: "1234567890",
+            phone: "+56 9 1234 5678",
+            contactName: "John Doe",
             website: "https://acme.com",
+            address: "Av. Principal 123, Santiago",
+            notes: "Cliente corporativo interesado en rediseño web.",
             userId: user.id,
         },
     })
 
-    const company2 = await prisma.company.upsert({
-        where: { id: "seed-company-2" },
+    const client2 = await prisma.client.upsert({
+        where: { id: "seed-client-2" },
         update: {},
         create: {
-            id: "seed-company-2",
+            id: "seed-client-2",
+            type: "EMPRESA",
             name: "Tech Solutions",
+            taxId: "77.987.654-3",
             email: "info@techsolutions.com",
-            phone: "0987654321",
+            phone: "+56 9 8765 4321",
+            contactName: "Jane Smith",
             website: "https://techsolutions.com",
+            address: "Calle Innovación 456, Providencia",
+            notes: "Agencia partner para desarrollo móvil.",
             userId: user.id,
         },
     })
 
-    console.log("Created companies")
-
-    const contact1 = await prisma.contact.upsert({
-        where: { id: "seed-contact-1" },
+    const client3 = await prisma.client.upsert({
+        where: { id: "seed-client-3" },
         update: {},
         create: {
-            id: "seed-contact-1",
-            firstName: "John",
-            lastName: "Doe",
-            email: "john.doe@acme.com",
-            phone: "1112223333",
-            position: "CEO",
-            companyId: company1.id,
+            id: "seed-client-3",
+            type: "PERSONA",
+            name: "María González",
+            taxId: "18.456.789-0",
+            email: "maria.gonzalez@gmail.com",
+            phone: "+56 9 5555 4444",
+            address: "Pasaje Los Aromos 89, Valparaíso",
+            notes: "Consultoría freelance para tienda online.",
             userId: user.id,
         },
     })
 
-    const contact2 = await prisma.contact.upsert({
-        where: { id: "seed-contact-2" },
-        update: {},
-        create: {
-            id: "seed-contact-2",
-            firstName: "Jane",
-            lastName: "Smith",
-            email: "jane.smith@techsolutions.com",
-            phone: "4445556666",
-            position: "CTO",
-            companyId: company2.id,
-            userId: user.id,
-        },
-    })
-
-    console.log("Created contacts")
+    console.log("Created clients")
 
     await prisma.deal.deleteMany({
         where: { title: { contains: "Seed Deal" } },
     })
 
-    const deal1 = await prisma.deal.create({
+    await prisma.deal.create({
         data: {
             title: "Seed Deal - Web Development",
             description: "Website redesign project",
             value: 15000,
             stage: "PROSPECTO",
-            contactId: contact1.id,
-            companyId: company1.id,
+            clientId: client1.id,
             userId: user.id,
         },
     })
 
-    const deal2 = await prisma.deal.create({
+    await prisma.deal.create({
         data: {
             title: "Seed Deal - Mobile App",
             description: "Mobile app development",
             value: 25000,
             stage: "CONTACTADO",
-            contactId: contact2.id,
-            companyId: company2.id,
+            clientId: client2.id,
             userId: user.id,
         },
     })
 
-    const deal3 = await prisma.deal.create({
+    await prisma.deal.create({
         data: {
             title: "Seed Deal - Consulting",
             description: "Technical consulting",
             value: 8000,
             stage: "PROPUESTA_ENVIADA",
-            contactId: contact1.id,
-            companyId: company1.id,
+            clientId: client3.id,
             userId: user.id,
         },
     })
@@ -123,8 +114,7 @@ async function main() {
     console.log("Created deals")
     console.log("Seed completed successfully!")
     console.log(`Created ${await prisma.deal.count()} deals`)
-    console.log(`Created ${await prisma.contact.count()} contacts`)
-    console.log(`Created ${await prisma.company.count()} companies`)
+    console.log(`Created ${await prisma.client.count()} clients`)
 }
 
 main()

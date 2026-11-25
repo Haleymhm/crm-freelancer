@@ -39,8 +39,7 @@ interface Quote {
     deal: {
         id: string
         title: string
-        contact: { firstName: string; lastName: string } | null
-        company: { name: string } | null
+        client: { name: string; type?: string } | null
     }
 }
 
@@ -159,9 +158,7 @@ export default function CotizacionesPage() {
                         </TableHeader>
                         <TableBody>
                             {quotes.map((quote) => {
-                                const clientName = quote.deal.contact
-                                    ? `${quote.deal.contact.firstName} ${quote.deal.contact.lastName}`
-                                    : quote.deal.company?.name ?? "—"
+                                const clientName = quote.deal.client?.name ?? "—"
 
                                 return (
                                     <TableRow

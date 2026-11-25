@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils"
 import {
     LayoutDashboard,
     Users,
-    Building2,
     Kanban,
     FileText,
     Receipt,
@@ -18,8 +17,7 @@ import { Button } from "@/components/ui/button"
 
 const menuItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/contactos", label: "Contactos", icon: Users },
-    { href: "/empresas", label: "Empresas", icon: Building2 },
+    { href: "/clientes", label: "Clientes", icon: Users },
     { href: "/pipeline", label: "Seguimiento", icon: Kanban },
     { href: "/cotizaciones", label: "Cotizaciones", icon: FileText },
     { href: "/facturas", label: "Facturas", icon: Receipt },

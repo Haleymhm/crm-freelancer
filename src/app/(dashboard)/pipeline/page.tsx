@@ -42,8 +42,7 @@ interface Quote {
     deal: {
         id: string
         title: string
-        contact: { firstName: string; lastName: string } | null
-        company: { name: string } | null
+        client: { name: string; type?: string } | null
     }
 }
 
@@ -61,22 +60,15 @@ interface Deal {
     description?: string
     value: number
     stage: string
-    contactId?: string | null
-    companyId?: string | null
-    contact?: { firstName: string; lastName: string }
-    company?: { name: string }
+    clientId?: string | null
+    client?: { id: string; name: string; type?: string } | null
     quotes?: Quote[]
 }
 
-interface ContactOption {
-    id: string
-    firstName: string
-    lastName: string
-}
-
-interface CompanyOption {
+interface ClientOption {
     id: string
     name: string
+    type: "PERSONA" | "EMPRESA"
 }
 
 export default function PipelinePage() {
@@ -86,15 +78,13 @@ export default function PipelinePage() {
     const [editingDealId, setEditingDealId] = useState<string | null>(null)
     const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
     const [detailOpen, setDetailOpen] = useState(false)
-    const [contacts, setContacts] = useState<ContactOption[]>([])
-    const [companies, setCompanies] = useState<CompanyOption[]>([])
+    const [clients, setClients] = useState<ClientOption[]>([])
     const [formData, setFormData] = useState({
         title: "",
         description: "",
         value: "",
         stage: "PROSPECTO",
-        contactId: "",
-        companyId: "",
+        clientId: "",
     })
 
     const fetchDeals = async () => {
@@ -105,20 +95,14 @@ export default function PipelinePage() {
         }
     }
 
-    const fetchContacts = async () => {
-        const response = await fetch("/api/contactos")
-        if (response.ok) setContacts(await response.json())
-    }
-
-    const fetchCompanies = async () => {
-        const response = await fetch("/api/empresas")
-        if (response.ok) setCompanies(await response.json())
+    const fetchClients = async () => {
+        const response = await fetch("/api/clientes")
+        if (response.ok) setClients(await response.json())
     }
 
     useEffect(() => {
         fetchDeals()
-        fetchContacts()
-        fetchCompanies()
+        fetchClients()
     }, [])
 
     const handleDragStart = (e: React.DragEvent, dealId: string) => {
@@ -146,8 +130,7 @@ export default function PipelinePage() {
         const search = searchTerm.toLowerCase()
         return (
             deal.title.toLowerCase().includes(search) ||
-            deal.company?.name.toLowerCase().includes(search) ||
-            `${deal.contact?.firstName || ""} ${deal.contact?.lastName || ""}`.toLowerCase().includes(search)
+            deal.client?.name.toLowerCase().includes(search)
         )
     })
 
@@ -158,8 +141,7 @@ export default function PipelinePage() {
             description: deal.description || "",
             value: deal.value.toString(),
             stage: deal.stage,
-            contactId: deal.contactId || "",
-            companyId: deal.companyId || "",
+            clientId: deal.clientId || "",
         })
         setIsFormOpen(true)
     }
@@ -172,8 +154,7 @@ export default function PipelinePage() {
                 deal: {
                     id: deal.id,
                     title: deal.title,
-                    contact: deal.contact || null,
-                    company: deal.company || null,
+                    client: deal.client || null,
                 }
             })
             setDetailOpen(true)
@@ -192,8 +173,7 @@ export default function PipelinePage() {
             body: JSON.stringify({
                 ...formData,
                 value: formData.value ? parseFloat(formData.value as string) : 0,
-                contactId: formData.contactId || null,
-                companyId: formData.companyId || null,
+                clientId: formData.clientId || null,
             }),
         })
 
@@ -201,7 +181,7 @@ export default function PipelinePage() {
             fetchDeals()
             setIsFormOpen(false)
             setEditingDealId(null)
-            setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", contactId: "", companyId: "" })
+            setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", clientId: "" })
         } else {
             console.error("Error response:", await response.text());
             alert("Error al guardar el deal")
@@ -220,7 +200,7 @@ export default function PipelinePage() {
                 <h1 className="text-3xl font-bold">Pipeline de Ventas</h1>
                 <Button onClick={() => {
                     setEditingDealId(null)
-                    setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", contactId: "", companyId: "" })
+                    setFormData({ title: "", description: "", value: "", stage: "PROSPECTO", clientId: "" })
                     setIsFormOpen(true)
                 }}>
                     <Plus className="mr-2 h-4 w-4" />
@@ -272,14 +252,9 @@ export default function PipelinePage() {
                                                 <p className="text-lg font-bold text-primary">
                                                     {formatCurrency(Number(deal.value))}
                                                 </p>
-                                                {deal.contact && (
+                                                {deal.client && (
                                                     <p className="text-xs text-muted-foreground mt-2 line-clamp-1">
-                                                        {deal.contact.firstName} {deal.contact.lastName}
-                                                    </p>
-                                                )}
-                                                {deal.company && (
-                                                    <p className="text-xs text-muted-foreground line-clamp-1">
-                                                        {deal.company.name}
+                                                        {deal.client.name}
                                                     </p>
                                                 )}
                                             </div>
@@ -352,35 +327,20 @@ export default function PipelinePage() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="contactId">Contacto</Label>
+                                <Label htmlFor="clientId">Cliente</Label>
                                 <Select
-                                    value={formData.contactId || "none"}
-                                    onValueChange={(value) => setFormData({ ...formData, contactId: value === "none" ? "" : value })}
+                                    value={formData.clientId || "none"}
+                                    onValueChange={(value) => setFormData({ ...formData, clientId: value === "none" ? "" : value })}
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Seleccionar contacto" />
+                                        <SelectValue placeholder="Seleccionar cliente" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="none">Sin contacto</SelectItem>
-                                        {contacts.map((c) => (
-                                            <SelectItem key={c.id} value={c.id}>{c.firstName} {c.lastName}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="companyId">Empresa</Label>
-                                <Select
-                                    value={formData.companyId || "none"}
-                                    onValueChange={(value) => setFormData({ ...formData, companyId: value === "none" ? "" : value })}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleccionar empresa" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none">Sin empresa</SelectItem>
-                                        {companies.map((c) => (
-                                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                        <SelectItem value="none">Sin cliente</SelectItem>
+                                        {clients.map((c) => (
+                                            <SelectItem key={c.id} value={c.id}>
+                                                {c.name} ({c.type === "EMPRESA" ? "Empresa" : "Persona"})
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>

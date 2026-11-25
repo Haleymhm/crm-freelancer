@@ -10,8 +10,7 @@ interface Interaction {
     type: "EMAIL" | "LLAMADA" | "REUNION" | "NOTA" | "WHATSAPP"
     subject?: string
     notes?: string
-    contact?: { firstName: string; lastName: string } | null
-    company?: { name: string } | null
+    client?: { name: string; type?: string } | null
     deal?: { title: string } | null
     interactionDate: string
 }
@@ -54,10 +53,8 @@ export function InteractionList({ interactions }: InteractionListProps) {
                                 <p className="text-sm text-muted-foreground">{interaction.notes}</p>
                             )}
                             <div className="flex gap-3 text-xs text-muted-foreground">
-                                {interaction.contact && (
-                                    <span>
-                                        Contacto: {interaction.contact.firstName} {interaction.contact.lastName}
-                                    </span>
+                                {interaction.client && (
+                                    <span>Cliente: {interaction.client.name}</span>
                                 )}
                                 {interaction.deal && (
                                     <span>Deal: {interaction.deal.title}</span>

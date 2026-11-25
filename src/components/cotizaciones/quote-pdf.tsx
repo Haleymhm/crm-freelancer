@@ -120,8 +120,7 @@ interface Quote {
     createdAt: string
     deal: {
         title: string
-        contact: { firstName: string; lastName: string } | null
-        company: { name: string } | null
+        client: { name: string; type?: string } | null
     }
 }
 
@@ -140,9 +139,7 @@ const formatDate = (dateStr: string) =>
     })
 
 export function QuotePdf({ quote }: QuotePdfProps) {
-    const clientName = quote.deal.contact
-        ? `${quote.deal.contact.firstName} ${quote.deal.contact.lastName}`
-        : quote.deal.company?.name ?? "Sin cliente"
+    const clientName = quote.deal.client?.name ?? "Sin cliente"
 
     return (
         <Document>

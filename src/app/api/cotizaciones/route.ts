@@ -83,8 +83,7 @@ export async function GET(request: NextRequest) {
                     select: {
                         id: true,
                         title: true,
-                        contact: { select: { firstName: true, lastName: true } },
-                        company: { select: { name: true } },
+                        client: { select: { name: true, type: true } },
                     },
                 },
             },
@@ -144,8 +143,7 @@ export async function POST(request: NextRequest) {
                         select: {
                             id: true,
                             title: true,
-                            contact: { select: { firstName: true, lastName: true } },
-                            company: { select: { name: true } },
+                            client: { select: { name: true, type: true } },
                         },
                     },
                 },

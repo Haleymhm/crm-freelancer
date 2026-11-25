@@ -48,8 +48,7 @@ export async function GET(
                     select: {
                         id: true,
                         title: true,
-                        contact: { select: { firstName: true, lastName: true } },
-                        company: { select: { name: true } },
+                        client: { select: { name: true, type: true } },
                     },
                 },
             },
@@ -122,8 +121,7 @@ export async function PUT(
                     select: {
                         id: true,
                         title: true,
-                        contact: { select: { firstName: true, lastName: true } },
-                        company: { select: { name: true } },
+                        client: { select: { name: true, type: true } },
                     },
                 },
             },

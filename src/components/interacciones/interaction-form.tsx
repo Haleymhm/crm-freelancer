@@ -32,15 +32,10 @@ const INTERACTION_TYPES = [
     { value: "WHATSAPP", label: "WhatsApp" },
 ]
 
-interface Contact {
-    id: string
-    firstName: string
-    lastName: string
-}
-
-interface Company {
+interface Client {
     id: string
     name: string
+    type: "PERSONA" | "EMPRESA"
 }
 
 interface Deal {
@@ -51,16 +46,14 @@ interface Deal {
 interface InteractionFormProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    preselectedContactId?: string
-    preselectedCompanyId?: string
+    preselectedClientId?: string
     preselectedDealId?: string
     onSuccess: () => void
 }
 
-export function InteractionForm({ open, onOpenChange, preselectedContactId, preselectedCompanyId, preselectedDealId, onSuccess }: InteractionFormProps) {
+export function InteractionForm({ open, onOpenChange, preselectedClientId, preselectedDealId, onSuccess }: InteractionFormProps) {
     const [loading, setLoading] = useState(false)
-    const [contacts, setContacts] = useState<Contact[]>([])
-    const [companies, setCompanies] = useState<Company[]>([])
+    const [clients, setClients] = useState<Client[]>([])
     const [deals, setDeals] = useState<Deal[]>([])
 
     const {
@@ -75,8 +68,7 @@ export function InteractionForm({ open, onOpenChange, preselectedContactId, pres
             type: "NOTA",
             subject: "",
             notes: "",
-            contactId: preselectedContactId || "none",
-            companyId: preselectedCompanyId || "none",
+            clientId: preselectedClientId || "none",
             dealId: preselectedDealId || "none",
             interactionDate: "",
         },
@@ -84,13 +76,11 @@ export function InteractionForm({ open, onOpenChange, preselectedContactId, pres
 
     const fetchData = async () => {
         try {
-            const [contactsRes, companiesRes, dealsRes] = await Promise.all([
-                fetch("/api/contactos"),
-                fetch("/api/empresas"),
+            const [clientsRes, dealsRes] = await Promise.all([
+                fetch("/api/clientes"),
                 fetch("/api/deals"),
             ])
-            if (contactsRes.ok) setContacts(await contactsRes.json())
-            if (companiesRes.ok) setCompanies(await companiesRes.json())
+            if (clientsRes.ok) setClients(await clientsRes.json())
             if (dealsRes.ok) setDeals(await dealsRes.json())
         } catch (error) {
             console.error("Error fetching data:", error)
@@ -104,8 +94,7 @@ export function InteractionForm({ open, onOpenChange, preselectedContactId, pres
                 type: "NOTA",
                 subject: "",
                 notes: "",
-                contactId: preselectedContactId || "none",
-                companyId: preselectedCompanyId || "none",
+                clientId: preselectedClientId || "none",
                 dealId: preselectedDealId || "none",
                 interactionDate: "",
             })
@@ -123,8 +112,7 @@ export function InteractionForm({ open, onOpenChange, preselectedContactId, pres
                     type: data.type,
                     subject: data.subject || null,
                     notes: data.notes || null,
-                    contactId: data.contactId === "none" || data.contactId === "" ? null : data.contactId,
-                    companyId: data.companyId === "none" || data.companyId === "" ? null : data.companyId,
+                    clientId: data.clientId === "none" || data.clientId === "" ? null : data.clientId,
                     dealId: data.dealId === "none" || data.dealId === "" ? null : data.dealId,
                     interactionDate: data.interactionDate || undefined,
                 }),
@@ -189,49 +177,27 @@ export function InteractionForm({ open, onOpenChange, preselectedContactId, pres
                             <Input id="interactionDate" type="datetime-local" {...register("interactionDate")} />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="contactId">Contacto</Label>
-                                <Controller
-                                    name="contactId"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select value={field.value ?? "none"} onValueChange={field.onChange}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar contacto" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="none">Sin contacto</SelectItem>
-                                                {contacts.map((c) => (
-                                                    <SelectItem key={c.id} value={c.id}>
-                                                        {c.firstName} {c.lastName}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="companyId">Empresa</Label>
-                                <Controller
-                                    name="companyId"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select value={field.value ?? "none"} onValueChange={field.onChange}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar empresa" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="none">Sin empresa</SelectItem>
-                                                {companies.map((c) => (
-                                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                            </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="clientId">Cliente</Label>
+                            <Controller
+                                name="clientId"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select value={field.value ?? "none"} onValueChange={field.onChange}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar cliente" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">Sin cliente</SelectItem>
+                                            {clients.map((c) => (
+                                                <SelectItem key={c.id} value={c.id}>
+                                                    {c.name} ({c.type === "EMPRESA" ? "Empresa" : "Persona"})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                         </div>
 
                         <div className="space-y-2">

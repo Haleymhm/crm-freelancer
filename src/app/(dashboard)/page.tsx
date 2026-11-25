@@ -8,7 +8,7 @@ import { PendingReminders } from "@/components/dashboard/pending-reminders"
 import { getRecentInteractions, getPendingReminders } from "@/lib/dashboard-data"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Plus, UserPlus, Building2, Kanban } from "lucide-react"
+import { Plus, UserPlus, Kanban } from "lucide-react"
 
 async function getDashboardStats(userId: string) {
     const currentDate = new Date()
@@ -20,7 +20,7 @@ async function getDashboardStats(userId: string) {
         activeDeals,
         monthlyRevenue,
         pendingQuotes,
-        newContacts,
+        newClients,
         lastMonthRevenue,
         totalDealsValue,
     ] = await Promise.all([
@@ -44,7 +44,7 @@ async function getDashboardStats(userId: string) {
                 status: "ENVIADA",
             },
         }),
-        prisma.contact.count({
+        prisma.client.count({
             where: {
                 userId,
                 createdAt: { gte: firstDayOfMonth },
@@ -77,7 +77,7 @@ async function getDashboardStats(userId: string) {
         activeDeals,
         monthlyRevenue: monthlyRevNum,
         pendingQuotes,
-        newContacts,
+        newClients,
         revenueChange,
         totalDealsValue: Number(totalDealsValue._sum.value || 0),
     }
@@ -129,11 +129,11 @@ export default async function DashboardPage() {
                 />
                 <KpiCard
                     title="Clientes Nuevos"
-                    value={stats.newContacts}
+                    value={stats.newClients}
                     icon={Users}
-                    description="Contactos del mes"
+                    description="Clientes del mes"
                     trend={null}
-                    href="/contactos"
+                    href="/clientes"
                 />
             </div>
 
@@ -151,15 +151,9 @@ export default async function DashboardPage() {
                             </Link>
                         </Button>
                         <Button asChild variant="outline">
-                            <Link href="/contactos">
+                            <Link href="/clientes">
                                 <UserPlus className="mr-2 h-4 w-4" />
-                                Nuevo Contacto
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline">
-                            <Link href="/empresas">
-                                <Building2 className="mr-2 h-4 w-4" />
-                                Nueva Empresa
+                                Nuevo Cliente
                             </Link>
                         </Button>
                         <Button asChild variant="outline">
