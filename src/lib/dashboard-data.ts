@@ -6,8 +6,7 @@ export async function getRecentInteractions(userId: string, limit = 5) {
         orderBy: { interactionDate: "desc" },
         take: limit,
         include: {
-            contact: { select: { firstName: true, lastName: true } },
-            company: { select: { name: true } },
+            client: { select: { name: true, type: true } },
             deal: { select: { title: true } },
         },
     })

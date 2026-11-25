@@ -12,8 +12,7 @@ export async function GET() {
         const deals = await prisma.deal.findMany({
             where: { userId: session.user.id },
             include: {
-                contact: { select: { firstName: true, lastName: true } },
-                company: { select: { name: true } },
+                client: { select: { id: true, name: true, type: true } },
                 quotes: { orderBy: { createdAt: "desc" } },
             },
             orderBy: { createdAt: "desc" },
@@ -35,10 +34,12 @@ export async function POST(request: NextRequest) {
         const data = await request.json()
         const deal = await prisma.deal.create({
             data: {
-                ...data,
+                title: data.title,
+                description: data.description || null,
+                value: data.value,
+                stage: data.stage,
                 userId: session.user.id,
-                contactId: data.contactId || null,
-                companyId: data.companyId || null,
+                clientId: data.clientId && data.clientId !== "none" ? data.clientId : null,
                 expectedCloseDate: data.expectedCloseDate ? new Date(data.expectedCloseDate) : null,
             },
         })

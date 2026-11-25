@@ -8,8 +8,7 @@ interface Interaction {
     type: "EMAIL" | "LLAMADA" | "REUNION" | "NOTA" | "WHATSAPP"
     subject?: string | null
     notes?: string | null
-    contact?: { firstName: string; lastName: string } | null
-    company?: { name: string } | null
+    client?: { name: string; type?: string } | null
     deal?: { title: string } | null
     interactionDate: string | Date
 }
@@ -42,9 +41,7 @@ export function RecentActivities({ interactions }: RecentActivitiesProps) {
             <CardContent>
                 <div className="space-y-4">
                     {interactions.map((interaction) => {
-                        const clientName = interaction.contact
-                            ? `${interaction.contact.firstName} ${interaction.contact.lastName}`
-                            : interaction.company?.name ?? "—"
+                        const clientName = interaction.client?.name ?? "—"
 
                         return (
                             <div key={interaction.id} className="flex items-start gap-3">
