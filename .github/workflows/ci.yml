@@ -1,0 +1,44 @@
+name: Security & Quality CI
+
+on:
+  push:
+    branches: [main, master, "fix/**"]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec prisma generate
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm run lint
+      - run: pnpm audit --prod --audit-level=high
+      - name: Verify security headers
+        env:
+          DATABASE_URL: postgresql://user:pass@localhost:5432/crm
+          AUTH_SECRET: ci-placeholder-secret-at-least-32-chars-long
+        run: |
+          pnpm run build
+          pnpm run start -- -p 3000 &
+          SERVER_PID=$!
+          trap "kill $SERVER_PID 2>/dev/null || true" EXIT
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null http://localhost:3000/login; then break; fi
+            sleep 1
+          done
+          HEADERS=$(curl -sI http://localhost:3000/login)
+          echo "$HEADERS"
+          echo "$HEADERS" | grep -qi "x-frame-options: DENY"
+          echo "$HEADERS" | grep -qi "x-content-type-options: nosniff"
+          echo "$HEADERS" | grep -qi "cross-origin-opener-policy: same-origin"
+          echo "$HEADERS" | grep -qi "content-security-policy:"
