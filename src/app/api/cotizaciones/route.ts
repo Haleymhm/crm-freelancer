@@ -2,7 +2,35 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { createQuoteSchema } from "@/lib/validations/quote"
-import { z } from "zod"
+import { isSameOrigin } from "@/lib/http/same-origin"
+
+const noStoreHeaders = {
+    "Cache-Control": "no-store, max-age=0",
+    Vary: "Cookie",
+}
+
+const quoteSelect = {
+    id: true,
+    dealId: true,
+    quoteNumber: true,
+    status: true,
+    items: true,
+    subtotal: true,
+    tax: true,
+    total: true,
+    validUntil: true,
+    notes: true,
+    sentAt: true,
+    createdAt: true,
+    updatedAt: true,
+    deal: {
+        select: {
+            id: true,
+            title: true,
+            client: { select: { name: true, type: true } },
+        },
+    },
+}
 
 /**
  * Genera el próximo número de cotización para el usuario.
@@ -30,6 +58,7 @@ async function generateQuoteNumber(userId: string): Promise<string> {
 
             const exists = await tx.quote.findUnique({
                 where: { quoteNumber: candidate },
+                select: { id: true },
             })
 
             if (!exists) return candidate
@@ -78,19 +107,11 @@ export async function GET(request: NextRequest) {
                 ...(dealId && { dealId }),
                 ...(statusFilter && { status: statusFilter }),
             },
-            include: {
-                deal: {
-                    select: {
-                        id: true,
-                        title: true,
-                        client: { select: { name: true, type: true } },
-                    },
-                },
-            },
+            select: quoteSelect,
             orderBy: { createdAt: "desc" },
         })
 
-        return NextResponse.json(quotes)
+        return NextResponse.json(quotes, { headers: noStoreHeaders })
     } catch (error) {
         console.error("Error fetching quotes:", error)
         return NextResponse.json({ error: "Error al obtener cotizaciones" }, { status: 500 })
@@ -99,33 +120,43 @@ export async function GET(request: NextRequest) {
 
 // POST /api/cotizaciones — Crea una nueva cotización
 export async function POST(request: NextRequest) {
-    const maxRetries = 3
+    if (!isSameOrigin(request)) {
+        return NextResponse.json({ error: "Origen no permitido" }, { status: 403 })
+    }
 
+    const session = await auth()
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    }
+
+    const parsed = createQuoteSchema.safeParse(await request.json().catch(() => null))
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: "Datos inválidos", details: parsed.error.flatten() },
+            { status: 400 }
+        )
+    }
+
+    const { dealId, items, taxRate, validUntil, notes } = parsed.data
+
+    const deal = await prisma.deal.findFirst({
+        where: { id: dealId, userId: session.user.id },
+        select: { id: true },
+    })
+    if (!deal) {
+        return NextResponse.json({ error: "Deal no encontrado" }, { status: 404 })
+    }
+
+    const { subtotal, tax, total } = calculateTotals(items, taxRate ?? 16)
+    const processedItems = items.map((item) => ({
+        ...item,
+        total: item.quantity * item.unitPrice,
+    }))
+
+    const maxRetries = 3
     for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
-            const session = await auth()
-            if (!session?.user?.id) {
-                return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-            }
-
-            const body = await request.json()
-            const validatedData = createQuoteSchema.parse(body)
-            const { dealId, items, taxRate, validUntil, notes } = validatedData
-
-            const deal = await prisma.deal.findFirst({
-                where: { id: dealId, userId: session.user.id },
-            })
-            if (!deal) {
-                return NextResponse.json({ error: "Deal no encontrado" }, { status: 404 })
-            }
-
-            const { subtotal, tax, total } = calculateTotals(items, taxRate ?? 16)
             const quoteNumber = await generateQuoteNumber(session.user.id)
-
-            const processedItems = items.map((item) => ({
-                ...item,
-                total: item.quantity * item.unitPrice,
-            }))
 
             const quote = await prisma.quote.create({
                 data: {
@@ -138,22 +169,11 @@ export async function POST(request: NextRequest) {
                     validUntil: validUntil ? new Date(`${validUntil}T12:00:00Z`) : null,
                     notes: notes || null,
                 },
-                include: {
-                    deal: {
-                        select: {
-                            id: true,
-                            title: true,
-                            client: { select: { name: true, type: true } },
-                        },
-                    },
-                },
+                select: quoteSelect,
             })
 
             return NextResponse.json(quote, { status: 201 })
         } catch (error) {
-            if (error instanceof z.ZodError) {
-                return NextResponse.json({ error: "Datos inválidos", details: error.errors }, { status: 400 })
-            }
             const prismaError = error as { code?: string }
             if (prismaError.code === "P2002" && attempt < maxRetries - 1) {
                 continue
