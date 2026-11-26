@@ -33,16 +33,16 @@ async def run_test():
         # -> Navigate to http://localhost:3001
         await page.goto("http://localhost:3001", wait_until="commit", timeout=10000)
         
-        # -> Fill the email and password fields and submit the login form (enter example@gmail.com / password123).
+        # -> Fill the email and password fields and submit the login form (enter test@example.invalid / __TEST_PASSWORD__).
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('example@gmail.com')
+        await page.wait_for_timeout(3000); await elem.fill('test@example.invalid')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('password123')
+        await page.wait_for_timeout(3000); await elem.fill('__TEST_PASSWORD__')
         
         frame = context.pages[-1]
         # Click element
