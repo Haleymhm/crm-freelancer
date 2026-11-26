@@ -1,3 +1,4 @@
+import "server-only"
 import { prisma } from "@/lib/prisma"
 
 export async function getRecentInteractions(userId: string, limit = 5) {
