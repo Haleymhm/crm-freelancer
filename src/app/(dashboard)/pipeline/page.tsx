@@ -195,9 +195,9 @@ export default function PipelinePage() {
     }
 
     return (
-        <div className="flex h-[calc(100vh-3rem)] min-h-[620px] flex-col gap-4">
-            <header className="flex shrink-0 items-center justify-between gap-4">
-                <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+        <div className="-mx-6 flex h-[calc(100vh-3rem)] min-h-[620px] flex-col gap-4 px-3 sm:mx-0 sm:px-0">
+            <header className="flex shrink-0 flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <h1 className="whitespace-nowrap text-base font-semibold tracking-tight text-slate-900 sm:text-xl">
                     Pipeline de Ventas
                 </h1>
                 <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium tabular-nums text-slate-500 shadow-sm">
@@ -266,14 +266,11 @@ export default function PipelinePage() {
                                     >
                                         {stage.label}
                                     </h2>
-                                    <span className="rounded-full bg-slate-200/80 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-slate-500">
-                                        {stageDeals.length}
-                                    </span>
                                     <span
-                                        title={formatCurrency(total)}
-                                        className="ml-auto max-w-[92px] truncate text-[10px] font-medium tabular-nums text-slate-400"
+                                        title={`Total de la etapa: ${formatCurrency(total)}`}
+                                        className="rounded-full bg-slate-200/80 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-slate-500"
                                     >
-                                        {formatCurrency(total)}
+                                        {stageDeals.length}
                                     </span>
                                 </header>
 
