@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 
 function buildCsp(nonce: string): string {
+    const isProd = process.env.NODE_ENV === "production"
     return [
         "default-src 'self'",
         "base-uri 'self'",
@@ -10,10 +11,12 @@ function buildCsp(nonce: string): string {
         "img-src 'self' data: blob:",
         "font-src 'self' data:",
         "style-src 'self' 'unsafe-inline'",
-        `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+        isProd
+            ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`
+            : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval'`,
         "connect-src 'self'",
         "form-action 'self'",
-        "upgrade-insecure-requests",
+        ...(isProd ? ["upgrade-insecure-requests"] : []),
     ].join("; ")
 }
 
