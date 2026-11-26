@@ -4,17 +4,28 @@ import bcrypt from "bcryptjs"
 const prisma = new PrismaClient()
 
 async function main() {
+    if (process.env.NODE_ENV === "production" && process.env.ALLOW_SEED !== "true") {
+        throw new Error("El seed está bloqueado en producción")
+    }
+
+    const seedPassword = process.env.SEED_PASSWORD
+    const seedEmail = (process.env.SEED_EMAIL ?? "seed@example.invalid").trim().toLowerCase()
+
+    if (!seedPassword || seedPassword.length < 16) {
+        throw new Error("SEED_PASSWORD debe tener al menos 16 caracteres")
+    }
+
     console.log("Starting seed...")
 
-    const hashedPassword = await bcrypt.hash("password123", 10)
+    const hashedPassword = await bcrypt.hash(seedPassword, 12)
 
     const user = await prisma.user.upsert({
-        where: { email: "haleymhm@localhost.dev" },
+        where: { email: seedEmail },
         update: {},
         create: {
-            email: "haleymhm@localhost.dev",
+            email: seedEmail,
             password: hashedPassword,
-            name: "Test User",
+            name: "Seed User",
         },
     })
 
