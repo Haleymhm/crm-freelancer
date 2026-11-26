@@ -2,36 +2,56 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
+import { registerLimiter } from "@/lib/rate-limit"
+import { isSameOrigin } from "@/lib/http/same-origin"
 
 const apiRegisterSchema = z.object({
-    name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-    email: z.string().email("Debe ser un correo electrónico válido"),
-    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+    name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(100),
+    email: z.string().trim().toLowerCase().email("Debe ser un correo electrónico válido").max(254),
+    password: z.string().min(12, "La contraseña debe tener al menos 12 caracteres").max(128),
 })
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json()
-        const validatedData = apiRegisterSchema.parse(body)
-        const { name, email, password } = validatedData
+        if (!isSameOrigin(request)) {
+            return NextResponse.json({ error: "Origen no permitido" }, { status: 403 })
+        }
 
-        // Verificar si el usuario ya existe
-        const existingUser = await prisma.user.findUnique({
-            where: { email },
-        })
-
-        if (existingUser) {
+        const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
+        const { success } = await registerLimiter.limit(ip)
+        if (!success) {
             return NextResponse.json(
-                { error: "El email ya está registrado" },
+                { error: "Demasiadas solicitudes. Intenta más tarde." },
+                { status: 429 }
+            )
+        }
+
+        const parsed = apiRegisterSchema.safeParse(await request.json().catch(() => null))
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: "Datos de registro inválidos", details: parsed.error.flatten() },
                 { status: 400 }
             )
         }
 
-        // Hashear contraseña
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const { name, email, password } = parsed.data
 
-        // Crear usuario
-        const user = await prisma.user.create({
+        const existingUser = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true },
+        })
+
+        // Respuesta genérica para evitar enumeración de correos
+        if (existingUser) {
+            return NextResponse.json(
+                { message: "Si el correo es válido, el registro se completará correctamente" },
+                { status: 202 }
+            )
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12)
+
+        await prisma.user.create({
             data: {
                 name,
                 email,
@@ -40,13 +60,10 @@ export async function POST(request: NextRequest) {
         })
 
         return NextResponse.json(
-            { message: "Usuario creado exitosamente", userId: user.id },
-            { status: 201 }
+            { message: "Si el correo es válido, el registro se completará correctamente" },
+            { status: 202 }
         )
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: "Datos de registro inválidos", details: error.errors }, { status: 400 })
-        }
         console.error("Error creating user:", error)
         return NextResponse.json(
             { error: "Error al crear el usuario" },

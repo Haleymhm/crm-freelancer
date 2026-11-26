@@ -37,12 +37,12 @@ async def run_test():
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('example@gmail.com')
+        await page.wait_for_timeout(3000); await elem.fill('test@example.invalid')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div[2]/div[2]/div/form/div[2]/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('password123')
+        await page.wait_for_timeout(3000); await elem.fill('__TEST_PASSWORD__')
         
         frame = context.pages[-1]
         # Click element

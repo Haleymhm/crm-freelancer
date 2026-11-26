@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { updateQuoteSchema } from "@/lib/validations/quote"
-import { z } from "zod"
+import { isSameOrigin } from "@/lib/http/same-origin"
 import type { DealStage } from "@prisma/client"
 
 type QuoteItem = {
@@ -12,8 +12,43 @@ type QuoteItem = {
     total?: number
 }
 
+const noStoreHeaders = {
+    "Cache-Control": "no-store, max-age=0",
+    Vary: "Cookie",
+}
+
+const quoteSelect = {
+    id: true,
+    dealId: true,
+    quoteNumber: true,
+    status: true,
+    items: true,
+    subtotal: true,
+    tax: true,
+    total: true,
+    validUntil: true,
+    notes: true,
+    sentAt: true,
+    createdAt: true,
+    updatedAt: true,
+    deal: {
+        select: {
+            id: true,
+            title: true,
+            client: { select: { name: true, type: true } },
+        },
+    },
+}
+
 const validStatuses = ["BORRADOR", "ENVIADA", "ACEPTADA", "RECHAZADA"] as const
 type QuoteStatus = (typeof validStatuses)[number]
+
+const allowedTransitions: Record<QuoteStatus, readonly QuoteStatus[]> = {
+    BORRADOR: ["ENVIADA", "RECHAZADA"],
+    ENVIADA: ["ACEPTADA", "RECHAZADA"],
+    ACEPTADA: [],
+    RECHAZADA: [],
+}
 
 /**
  * Calcula los totales de la cotización en el servidor.
@@ -43,22 +78,14 @@ export async function GET(
 
         const quote = await prisma.quote.findFirst({
             where: { id, deal: { userId: session.user.id } },
-            include: {
-                deal: {
-                    select: {
-                        id: true,
-                        title: true,
-                        client: { select: { name: true, type: true } },
-                    },
-                },
-            },
+            select: quoteSelect,
         })
 
         if (!quote) {
             return NextResponse.json({ error: "Cotización no encontrada" }, { status: 404 })
         }
 
-        return NextResponse.json(quote)
+        return NextResponse.json(quote, { headers: noStoreHeaders })
     } catch (error) {
         console.error("Error fetching quote:", error)
         return NextResponse.json({ error: "Error al obtener cotización" }, { status: 500 })
@@ -71,6 +98,10 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        if (!isSameOrigin(request)) {
+            return NextResponse.json({ error: "Origen no permitido" }, { status: 403 })
+        }
+
         const session = await auth()
         if (!session?.user?.id) {
             return NextResponse.json({ error: "No autorizado" }, { status: 401 })
@@ -93,12 +124,22 @@ export async function PUT(
             )
         }
 
-        const body = await request.json()
-        const validatedData = updateQuoteSchema.parse(body)
-        const { items, taxRate, validUntil, notes } = validatedData
+        const parsed = updateQuoteSchema.safeParse(await request.json().catch(() => null))
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: "Datos inválidos", details: parsed.error.flatten() },
+                { status: 400 }
+            )
+        }
+
+        const { items, taxRate, validUntil, notes } = parsed.data
 
         const itemsToUpdate = items ?? (existing.items as QuoteItem[])
-        const rateToUse = taxRate ?? 16
+        const existingSubtotal = Number(existing.subtotal)
+        const existingTax = Number(existing.tax)
+        const derivedTaxRate =
+            existingSubtotal > 0 ? Math.round((existingTax / existingSubtotal) * 10000) / 100 : 16
+        const rateToUse = taxRate ?? derivedTaxRate
         const { subtotal, tax, total } = calculateTotals(itemsToUpdate, rateToUse)
 
         const processedItems = itemsToUpdate.map((item) => ({
@@ -113,25 +154,18 @@ export async function PUT(
                 subtotal,
                 tax,
                 total,
-                validUntil: validUntil ? new Date(validUntil) : null,
-                notes: notes || null,
+                ...(validUntil !== undefined && {
+                    validUntil: validUntil ? new Date(`${validUntil}T12:00:00Z`) : null,
+                }),
+                ...(notes !== undefined && {
+                    notes: notes || null,
+                }),
             },
-            include: {
-                deal: {
-                    select: {
-                        id: true,
-                        title: true,
-                        client: { select: { name: true, type: true } },
-                    },
-                },
-            },
+            select: quoteSelect,
         })
 
         return NextResponse.json(updated)
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: "Datos inválidos", details: error.errors }, { status: 400 })
-        }
         console.error("Error updating quote:", error)
         return NextResponse.json({ error: "Error al actualizar cotización" }, { status: 500 })
     }
@@ -143,15 +177,20 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        if (!isSameOrigin(request)) {
+            return NextResponse.json({ error: "Origen no permitido" }, { status: 403 })
+        }
+
         const session = await auth()
         if (!session?.user?.id) {
             return NextResponse.json({ error: "No autorizado" }, { status: 401 })
         }
 
         const { id } = await params
-        const { status } = (await request.json()) as { status: string }
+        const body = (await request.json().catch(() => null)) as { status?: string } | null
+        const status = body?.status
 
-        if (!validStatuses.includes(status as QuoteStatus)) {
+        if (!status || !validStatuses.includes(status as QuoteStatus)) {
             return NextResponse.json({ error: "Estado inválido" }, { status: 400 })
         }
 
@@ -164,6 +203,13 @@ export async function PATCH(
 
         if (!existing) {
             return NextResponse.json({ error: "Cotización no encontrada" }, { status: 404 })
+        }
+
+        if (!allowedTransitions[existing.status as QuoteStatus].includes(nextStatus)) {
+            return NextResponse.json(
+                { error: "Transición de estado no permitida" },
+                { status: 409 }
+            )
         }
 
         /**
@@ -185,6 +231,7 @@ export async function PATCH(
                     status: nextStatus,
                     ...(nextStatus === "ENVIADA" && { sentAt: new Date() }),
                 },
+                select: quoteSelect,
             }),
             ...(dealUpdate
                 ? [
@@ -206,13 +253,16 @@ export async function PATCH(
     }
 }
 
-
 // DELETE /api/cotizaciones/[id] — Elimina una cotización (solo en BORRADOR)
 export async function DELETE(
-    _request: NextRequest,
+    request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        if (!isSameOrigin(request)) {
+            return NextResponse.json({ error: "Origen no permitido" }, { status: 403 })
+        }
+
         const session = await auth()
         if (!session?.user?.id) {
             return NextResponse.json({ error: "No autorizado" }, { status: 401 })
@@ -222,6 +272,7 @@ export async function DELETE(
 
         const existing = await prisma.quote.findFirst({
             where: { id, deal: { userId: session.user.id } },
+            select: { id: true, status: true },
         })
 
         if (!existing) {

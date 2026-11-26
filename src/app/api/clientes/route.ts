@@ -2,8 +2,28 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { clientSchema } from "@/lib/validations/client"
-import { z } from "zod"
+import { isSameOrigin } from "@/lib/http/same-origin"
 import type { ClientType } from "@prisma/client"
+
+const noStoreHeaders = {
+    "Cache-Control": "no-store, max-age=0",
+    Vary: "Cookie",
+}
+
+const clientSelect = {
+    id: true,
+    type: true,
+    name: true,
+    taxId: true,
+    email: true,
+    phone: true,
+    contactName: true,
+    website: true,
+    address: true,
+    notes: true,
+    createdAt: true,
+    updatedAt: true,
+}
 
 export async function GET(request: NextRequest) {
     try {
@@ -25,10 +45,11 @@ export async function GET(request: NextRequest) {
                 userId: session.user.id,
                 ...(typeFilter && { type: typeFilter }),
             },
+            select: clientSelect,
             orderBy: { createdAt: "desc" },
         })
 
-        return NextResponse.json(clients)
+        return NextResponse.json(clients, { headers: noStoreHeaders })
     } catch (error) {
         console.error("Error fetching clients:", error)
         return NextResponse.json({ error: "Error al obtener clientes" }, { status: 500 })
@@ -37,14 +58,24 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
+        if (!isSameOrigin(request)) {
+            return NextResponse.json({ error: "Origen no permitido" }, { status: 403 })
+        }
+
         const session = await auth()
         if (!session?.user?.id) {
             return NextResponse.json({ error: "No autorizado" }, { status: 401 })
         }
 
-        const data = await request.json()
-        const validatedData = clientSchema.parse(data)
-        const { type, name, taxId, email, phone, contactName, website, address, notes } = validatedData
+        const parsed = clientSchema.safeParse(await request.json().catch(() => null))
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: "Datos inválidos", details: parsed.error.flatten() },
+                { status: 400 }
+            )
+        }
+
+        const { type, name, taxId, email, phone, contactName, website, address, notes } = parsed.data
 
         const client = await prisma.client.create({
             data: {
@@ -59,13 +90,11 @@ export async function POST(request: NextRequest) {
                 notes: notes || null,
                 userId: session.user.id,
             },
+            select: clientSelect,
         })
 
         return NextResponse.json(client, { status: 201 })
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: "Datos inválidos", details: error.errors }, { status: 400 })
-        }
         console.error("Error creating client:", error)
         return NextResponse.json({ error: "Error al crear cliente" }, { status: 500 })
     }
