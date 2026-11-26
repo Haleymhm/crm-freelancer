@@ -1,2 +1,0 @@
-DATABASE_URL="tira de conexion"
-AUTH_SECRET="Frase de Seguridad de 512 caracteres"
