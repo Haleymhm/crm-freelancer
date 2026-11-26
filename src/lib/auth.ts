@@ -3,12 +3,14 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
-import { loginLimiter } from "@/lib/rate-limit"
+import { loginLimiter, loginLockout } from "@/lib/rate-limit"
 
 const authSecret = process.env.AUTH_SECRET
 if (process.env.NODE_ENV === "production" && (!authSecret || authSecret.length < 32)) {
     throw new Error("AUTH_SECRET debe tener al menos 32 caracteres")
 }
+
+const isProduction = process.env.NODE_ENV === "production"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     secret: authSecret,
@@ -16,6 +18,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         strategy: "jwt",
         maxAge: 8 * 60 * 60,
         updateAge: 15 * 60,
+    },
+    cookies: {
+        sessionToken: {
+            name: isProduction ? "__Host-authjs.session-token" : "authjs.session-token",
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: isProduction,
+            },
+        },
     },
     pages: {
         signIn: "/login",
@@ -33,8 +46,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                 const ip =
                     request?.headers?.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
+                const rateKey = `${ip}:${email}`
 
-                const { success } = await loginLimiter.limit(`${ip}:${email}`)
+                if (loginLockout.isLocked(rateKey)) {
+                    throw new Error("Cuenta bloqueada temporalmente por intentos fallidos.")
+                }
+
+                const { success } = await loginLimiter.limit(rateKey)
                 if (!success) {
                     throw new Error("Demasiados intentos. Intenta más tarde.")
                 }
@@ -48,14 +66,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 })
 
                 if (!user || !user.password) {
+                    loginLockout.recordFailure(rateKey)
                     throw new Error("Credenciales incorrectas")
                 }
 
                 const passwordMatch = await bcrypt.compare(password, user.password)
 
                 if (!passwordMatch) {
+                    loginLockout.recordFailure(rateKey)
                     throw new Error("Credenciales incorrectas")
                 }
+
+                loginLockout.reset(rateKey)
 
                 return {
                     id: user.id,
